@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
 
 interface ContinueWatchingItem {
@@ -20,7 +21,7 @@ interface CategoryItem {
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
-  imports: [IonContent],
+  imports: [IonContent, RouterLink],
 })
 export class HomePage {
   heroImage = 'https://lh3.googleusercontent.com/aida-public/AB6AXuDhyXIPEueFHsrDkiJKbjJzKa3rNGFExCtdSABuEO6oAb2Ud2fnIclYfibd2cBxlJcNdPln5Jqtet3ujim3sogN6FCoEBtWpkNyc0p5LXjXPPiv4KjWU6bg87F-nfc8P28JvHennPjb68U8OwiCkYGBiNpcio3yeBW1sQLYsqIye1v-qdb_cd51vWdL9002IEHTHZnjkIzn9_ARIrOAsrZzG5cgcNIW4E4DyIfYYF3h1tN04su-ITUM9tkPuzNMcK9KMrPAsblonIQ';

@@ -1,0 +1,337 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>CineTrack - My Library</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <style>
+        body {
+          font-family: 'Inter', sans-serif;
+          background-color: #0b1326;
+          color: #dae2fd;
+          -webkit-font-smoothing: antialiased;
+        }
+        .glass-card {
+          background: rgba(23, 31, 51, 0.6);
+          backdrop-filter: blur(12px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover {
+          transform: scale(1.02);
+          border-color: rgba(56, 189, 248, 0.4);
+          box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+        }
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-glow {
+          filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.4));
+        }
+        ::-webkit-scrollbar {
+          width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+          background: #0b1326;
+        }
+        ::-webkit-scrollbar-thumb {
+          background: #2d3449;
+          border-radius: 10px;
+        }
+      </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                "on-secondary-fixed-variant": "#004c69",
+                "surface-container-high": "#222a3d",
+                "surface-container-low": "#131b2e",
+                "on-surface": "#dae2fd",
+                "surface-bright": "#31394d",
+                "outline": "#a08e7a",
+                "on-tertiary-fixed": "#001e2d",
+                "surface-container-lowest": "#060e20",
+                "primary-container": "#f59e0b",
+                "inverse-on-surface": "#283044",
+                "tertiary": "#8fd5ff",
+                "on-error": "#690005",
+                "inverse-surface": "#dae2fd",
+                "on-tertiary-container": "#004966",
+                "error": "#ffb4ab",
+                "on-primary": "#472a00",
+                "on-tertiary-fixed-variant": "#004c6a",
+                "inverse-primary": "#855300",
+                "surface-container": "#171f33",
+                "tertiary-container": "#1abdff",
+                "on-secondary": "#00354a",
+                "surface-dim": "#0b1326",
+                "tertiary-fixed-dim": "#7fd0ff",
+                "on-error-container": "#ffdad6",
+                "on-primary-fixed-variant": "#653e00",
+                "surface-container-highest": "#2d3449",
+                "primary-fixed": "#ffddb8",
+                "on-background": "#dae2fd",
+                "background": "#0b1326",
+                "tertiary-fixed": "#c5e7ff",
+                "secondary": "#7bd0ff",
+                "outline-variant": "#534434",
+                "primary": "#ffc174",
+                "on-tertiary": "#00344a",
+                "on-surface-variant": "#d8c3ad",
+                "on-primary-container": "#613b00",
+                "error-container": "#93000a",
+                "surface-tint": "#ffb95f",
+                "on-secondary-fixed": "#001e2c",
+                "primary-fixed-dim": "#ffb95f",
+                "surface-variant": "#2d3449",
+                "secondary-fixed": "#c4e7ff",
+                "on-primary-fixed": "#2a1700",
+                "on-secondary-container": "#00374d",
+                "secondary-container": "#00a6e0",
+                "surface": "#0b1326",
+                "secondary-fixed-dim": "#7bd0ff"
+              },
+              "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+              },
+              "spacing": {
+                "base": "8px",
+                "container-max": "1280px",
+                "margin-mobile": "16px",
+                "gutter": "16px",
+                "margin-desktop": "48px"
+              },
+              "fontFamily": {
+                "display-lg": ["Inter"],
+                "label-caps": ["Inter"],
+                "body-lg": ["Inter"],
+                "title-md": ["Inter"],
+                "headline-lg-mobile": ["Inter"],
+                "headline-lg": ["Inter"],
+                "body-sm": ["Inter"]
+              },
+              "fontSize": {
+                "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+      </script>
+    <style>
+        body {
+          min-height: max(884px, 100dvh);
+        }
+      </style>
+      </head>
+    <body class="bg-background text-on-surface min-h-screen pb-24">
+    <!-- TopAppBar -->
+    <header class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-b border-white/10 flex justify-between items-center px-margin-mobile h-16 w-full">
+    <div class="flex items-center gap-2">
+    <span class="material-symbols-outlined text-primary text-2xl" data-icon="movie_filter">movie_filter</span>
+    <h1 class="font-display-lg text-headline-lg-mobile text-primary tracking-tighter">CineTrack</h1>
+    </div>
+    <div class="flex items-center gap-4">
+    <button class="material-symbols-outlined text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95" data-icon="search">search</button>
+    <div class="w-8 h-8 rounded-full overflow-hidden border border-white/20">
+    <img alt="User profile avatar" data-alt="A professional close-up headshot of a person with a friendly expression, set against a blurred, high-end studio background. The lighting is soft and cinematic, utilizing warm key lights and cool rim highlights that reflect the CineTrack brand colors. The overall aesthetic is sleek and modern, suitable for a premium movie streaming platform profile." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrTkgyMaeChRKiU67Fi9BPdrK9AycjjEzVRdLraTnQ0P9qEpcXeeMyFUJGsQtKEPgzkkrcE0CdnlA3G_1usIUNHd-I9srVquhMw-EDqhV_IURg5XpaeyUgiGsDNS2XDGiAmnyWIlZ3-EYPUTQlmRAhBNnpO9r2binK9mTcrwoBn2NLDydNudnRga1rgdEf1SuLSj-WMsESOU5YqH0c4y1vjujBmkBd9eYJLbhITnk68jLH_Rxq6EJ9Q2bG2CYCdwtORMYnyWJGg_E">
+    </div>
+    </div>
+    </header>
+    <!-- Main Canvas -->
+    <main class="mt-20 px-margin-mobile max-w-container-max mx-auto">
+    <!-- Hero Header Section -->
+    <section class="py-6">
+    <h2 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg mb-2">My Library</h2>
+    <p class="font-body-sm text-on-surface-variant mb-6">Manage your collection across all devices.</p>
+    <!-- Tab Navigation -->
+    <div class="flex gap-2 p-1 bg-surface-container-low rounded-xl w-fit">
+    <button class="px-6 py-2 rounded-lg font-label-caps text-label-caps bg-primary text-on-primary shadow-lg transition-all" onclick="switchTab(this)">Watchlist</button>
+    <button class="px-6 py-2 rounded-lg font-label-caps text-label-caps text-on-surface-variant hover:text-on-surface transition-all" onclick="switchTab(this)">History</button>
+    <button class="px-6 py-2 rounded-lg font-label-caps text-label-caps text-on-surface-variant hover:text-on-surface transition-all" onclick="switchTab(this)">Favorites</button>
+    </div>
+    </section>
+    <!-- Content Grid -->
+    <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-gutter py-4">
+    <!-- TV Show Card with Progress -->
+    <div class="glass-card rounded-xl overflow-hidden group relative flex flex-col">
+    <div class="aspect-[2/3] relative overflow-hidden">
+    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A cinematic movie poster for a sci-fi series featuring a glowing astronaut overlooking a futuristic neon city. The atmosphere is dense with fog and vibrant electric blue and cinema amber highlights. The style is hyper-realistic with a focus on depth and scale, matching the premium CineTrack aesthetic of high-fidelity theatrical visuals." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTdiAoDJzPB4AGwLz0a0JDOeD3ElJGNapfULHuPOJyVB1HGJdUXLxLx5le_cYJC9w2wIS5-H1N3RI8hcjhoojTcajrEVVNuw60PN0tVkf49uyVJjg1nYTFoi48jAdSfq3ofHWy1YVbyJJxjp0r7sD5axUyqfzkTuyt07NjAk1f7JbYkazN2BljPUK9vAeBoeQAQf3mW0PKTPUzQHORPF6WxhryLHlIHmckcBSmBVQ2_TDyWcikw6bfuSnrMCkLDUylf2ZljkxlAzQ">
+    <div class="absolute top-2 right-2 flex gap-1">
+    <span class="bg-black/60 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-bold text-white border border-white/10 uppercase">4K</span>
+    </div>
+    <!-- Progress Bar -->
+    <div class="absolute bottom-0 left-0 w-full h-1 bg-white/10">
+    <div class="h-full bg-secondary w-3/4 shadow-[0_0_8px_rgba(123,208,255,0.6)]"></div>
+    </div>
+    </div>
+    <div class="p-3 flex flex-col flex-grow">
+    <h3 class="font-title-md text-sm md:text-title-md truncate mb-1">Stranger Horizons</h3>
+    <div class="flex items-center justify-between mt-auto">
+    <span class="font-body-sm text-[11px] text-on-surface-variant">S2:E8 of 10</span>
+    <button class="material-symbols-outlined text-secondary text-lg" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</button>
+    </div>
+    </div>
+    </div>
+    <!-- Movie Card -->
+    <div class="glass-card rounded-xl overflow-hidden group relative flex flex-col">
+    <div class="aspect-[2/3] relative overflow-hidden">
+    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A moody theatrical poster of a shadowy figure walking down a rain-slicked city street at night. Tall skyscrapers loom in the background with glowing yellow windows. The color palette is dominated by deep indigo and amber glows. The lighting creates a high-contrast film noir atmosphere with modern cinematic polish." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMNo2L0rSWx3wTX7uLL1rb_HB2TX0egfhXHmZDrXGTnaxYxn6kds7meu9ix3_iype_vLTrZDQAaeZ3t9glMGNnIccnvLManP73xvkBBmYAHXq3oKZ11PIHKqu4GfZxmec4j1SFK-L7IW4onGiCRxmHXbX9-Iv69Nhku__3rrayxzGbmo68pucQBo8ts5W-Q8fDVRhJSYRg5qt3a2mjqKJu_6MzRP_Rf72dLimdu0zBXH_AfF6BzPqh4ohQX-7U3x-Zn4sDLgGAcd8">
+    <div class="absolute top-2 right-2">
+    <span class="bg-surface-dim/80 backdrop-blur-md px-2 py-1 rounded text-[10px] font-bold text-primary border border-primary/20">9.2</span>
+    </div>
+    </div>
+    <div class="p-3 flex flex-col flex-grow">
+    <h3 class="font-title-md text-sm md:text-title-md truncate mb-1">Nightfall Protocol</h3>
+    <div class="flex items-center justify-between mt-auto">
+    <span class="font-body-sm text-[11px] text-on-surface-variant">2h 14m</span>
+    <button class="material-symbols-outlined text-on-surface-variant text-lg hover:text-primary transition-colors" data-icon="bookmark">bookmark</button>
+    </div>
+    </div>
+    </div>
+    <!-- TV Show Card -->
+    <div class="glass-card rounded-xl overflow-hidden group relative flex flex-col">
+    <div class="aspect-[2/3] relative overflow-hidden">
+    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="An artistic poster for a fantasy drama series showing an ancient golden crown resting on a bed of dark roses. The lighting is dramatic and moody, with gold-leaf textures shimmering against deep burgundy and black backgrounds. The visual style is opulent and sophisticated, emphasizing high-end cinematic production values." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHLbb7H77mIDgsMWyR4maO12AEKOiK1RWLBwUUxLrJ3f5X2DX-BohhP5nStyW5nl-oa3SYPXQy0FgrI0x1zmfJC_5l4MJrQs8QHUSyKin6Z9RI0LDbUahYXqdnubSwRCEYravFZptXX9EQQiLExzzJP0KcGlJqhHLPjVkHpO71hzx0SaxI89SSm8-naYTC_JdWNp8Y_xL_mKCweNimVOvWcDVIG6fNBndCgYhWWbjn7oh6FaAmO0_N7m7Fu81buq80X7-7DvkGqXw">
+    <div class="absolute bottom-0 left-0 w-full h-1 bg-white/10">
+    <div class="h-full bg-secondary w-1/5 shadow-[0_0_8px_rgba(123,208,255,0.6)]"></div>
+    </div>
+    </div>
+    <div class="p-3 flex flex-col flex-grow">
+    <h3 class="font-title-md text-sm md:text-title-md truncate mb-1">Kingdom of Dust</h3>
+    <div class="flex items-center justify-between mt-auto">
+    <span class="font-body-sm text-[11px] text-on-surface-variant">S1:E2 of 12</span>
+    <button class="material-symbols-outlined text-on-surface-variant text-lg" data-icon="more_vert">more_vert</button>
+    </div>
+    </div>
+    </div>
+    <!-- Movie Card 2 -->
+    <div class="glass-card rounded-xl overflow-hidden group relative flex flex-col">
+    <div class="aspect-[2/3] relative overflow-hidden">
+    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A bright and colorful animated film poster featuring whimsical characters in a lush, bioluminescent forest. The palette is a vibrant mix of teal, magenta, and electric blue. The style is clean, 3D rendered, and friendly, yet maintains the platform's sophisticated lighting and depth." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBybuy_WkV7JYVfTtPKw4m4T9nF8UmNup7PGdvMwooSkWOAINtaePoU2l8CLviM9PKErqyR42dQGChgEVeFqwEC3PySUpLWlzRMZODremwxYN6DeFCyeZUqtdISqdgbXvwlhVOLmuZsKQgdCnO2Ia_VKezO_3AEQT8KiaM1reATh-PB6eGeNHt1W8m75WYcFhm0dQEDP9Xr_MuI2NzzwPDtSLGS7PmEC_se-9Qt6FhNKpekz1UaC5t0X0DBMXPsgtEwiX_Qpw2auQw">
+    <div class="absolute top-2 left-2">
+    <div class="bg-primary/20 backdrop-blur-md px-2 py-0.5 rounded border border-primary/40 flex items-center gap-1">
+    <span class="material-symbols-outlined text-[12px] text-primary" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+    <span class="text-[10px] font-bold text-primary">FAVE</span>
+    </div>
+    </div>
+    </div>
+    <div class="p-3 flex flex-col flex-grow">
+    <h3 class="font-title-md text-sm md:text-title-md truncate mb-1">Nebula Garden</h3>
+    <div class="flex items-center justify-between mt-auto">
+    <span class="font-body-sm text-[11px] text-on-surface-variant">1h 45m</span>
+    <button class="material-symbols-outlined text-primary text-lg" data-icon="favorite" style="font-variation-settings: 'FILL' 1;">favorite</button>
+    </div>
+    </div>
+    </div>
+    <!-- TV Show Card 2 -->
+    <div class="glass-card rounded-xl overflow-hidden group relative flex flex-col">
+    <div class="aspect-[2/3] relative overflow-hidden">
+    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A minimalist architectural poster for a documentary series. It shows a stark white modern building against a deep navy blue sky. The composition is extremely geometric and balanced. The aesthetic is clean, intellectual, and high-end, utilizing shadows and sharp lines to create a sense of cinematic precision." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDp3iKA3HqhyptIdkhZ8FvyRP13gUDDPP5cugxibxNOULVy3kZiVUmV4Demlg0buY3uFdJmYcpcb2tezHGz2vUkv3vxLkr-G28FprnVzLX0gVzjWdhbgT0GWNB8mIheI90KZDo3x367QDHlihSckVgu97HWoO9mHGqecnBzVNkC0pjNb_GIF-I1z9F5QPuIfkMf9LyyEcKJ8mye7iAOhtjTJd6HAEbBoZfwXcKF5qtDFJijivEaiLaNu87ZJyJGSANvVMsZnuDhyAk">
+    <div class="absolute bottom-0 left-0 w-full h-1 bg-white/10">
+    <div class="h-full bg-secondary w-full"></div>
+    </div>
+    </div>
+    <div class="p-3 flex flex-col flex-grow">
+    <h3 class="font-title-md text-sm md:text-title-md truncate mb-1">Silicon Dreams</h3>
+    <div class="flex items-center justify-between mt-auto">
+    <span class="font-body-sm text-[11px] text-on-surface-variant">Completed</span>
+    <button class="material-symbols-outlined text-secondary text-lg" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</button>
+    </div>
+    </div>
+    </div>
+    <!-- Bento-style Stats/CTA Section (Extra depth) -->
+    <div class="col-span-2 md:col-span-3 lg:col-span-2 glass-card rounded-2xl p-6 flex flex-col justify-center bg-gradient-to-br from-surface-container-high/40 to-transparent relative overflow-hidden">
+    <div class="absolute -right-12 -bottom-12 opacity-10">
+    <span class="material-symbols-outlined text-[180px]" data-icon="auto_awesome">auto_awesome</span>
+    </div>
+    <h4 class="font-title-md text-primary mb-2">Weekly Summary</h4>
+    <p class="font-body-sm text-on-surface-variant mb-6 max-w-xs">You've completed 4 movies and 12 episodes this week. You're in the top 5% of movie buffs!</p>
+    <div class="flex gap-4">
+    <div class="flex flex-col">
+    <span class="font-display-lg text-headline-lg-mobile text-white">18h</span>
+    <span class="font-label-caps text-label-caps text-on-surface-variant">Watched</span>
+    </div>
+    <div class="w-px h-12 bg-white/10"></div>
+    <div class="flex flex-col">
+    <span class="font-display-lg text-headline-lg-mobile text-white">42</span>
+    <span class="font-label-caps text-label-caps text-on-surface-variant">In List</span>
+    </div>
+    </div>
+    <button class="mt-8 bg-secondary-container text-on-secondary-container px-6 py-3 rounded-xl font-label-caps text-label-caps hover:opacity-90 active:scale-95 transition-all w-fit">Explore Recommendations</button>
+    </div>
+    </section>
+    </main>
+    <!-- BottomNavBar -->
+    <nav class="fixed bottom-0 left-0 w-full flex justify-around items-center pt-2 pb-safe px-4 bg-surface-dim/90 backdrop-blur-2xl border-t border-white/5 z-50 rounded-t-xl h-20">
+    <div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-secondary transition-colors active:scale-110 duration-200 ease-out">
+    <span class="material-symbols-outlined" data-icon="home">home</span>
+    <span class="font-label-caps text-label-caps mt-1">Home</span>
+    </div>
+    <div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-secondary transition-colors active:scale-110 duration-200 ease-out">
+    <span class="material-symbols-outlined" data-icon="search">search</span>
+    <span class="font-label-caps text-label-caps mt-1">Search</span>
+    </div>
+    <div class="flex flex-col items-center justify-center text-primary filter drop-shadow-[0_0_8px_rgba(245,158,11,0.4)] active:scale-110 duration-200 ease-out">
+    <span class="material-symbols-outlined" data-icon="subscriptions" style="font-variation-settings: 'FILL' 1;">subscriptions</span>
+    <span class="font-label-caps text-label-caps mt-1">Library</span>
+    </div>
+    <div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-secondary transition-colors active:scale-110 duration-200 ease-out">
+    <span class="material-symbols-outlined" data-icon="settings">settings</span>
+    <span class="font-label-caps text-label-caps mt-1">Settings</span>
+    </div>
+    </nav>
+    <script>
+        function switchTab(btn) {
+          // Reset all buttons in the tab bar
+          const buttons = btn.parentElement.querySelectorAll('button');
+          buttons.forEach(b => {
+            b.classList.remove('bg-primary', 'text-on-primary', 'shadow-lg');
+            b.classList.add('text-on-surface-variant');
+          });
+          
+          // Highlight active button
+          btn.classList.add('bg-primary', 'text-on-primary', 'shadow-lg');
+          btn.classList.remove('text-on-surface-variant');
+          
+          // Subtle haptic feel
+          btn.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+            btn.style.transform = 'scale(1)';
+          }, 100);
+        }
+    
+        // Micro-interaction: Scroll reveal for cards
+        const observerOptions = {
+          threshold: 0.1
+        };
+    
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.style.opacity = "1";
+              entry.target.style.transform = "translateY(0)";
+            }
+          });
+        }, observerOptions);
+    
+        document.querySelectorAll('.glass-card').forEach(card => {
+          card.style.opacity = "0";
+          card.style.transform = "translateY(20px)";
+          card.style.transition = "opacity 0.6s ease-out, transform 0.6s ease-out";
+          observer.observe(card);
+        });
+      </script>
+    </body></html>
