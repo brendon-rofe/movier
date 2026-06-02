@@ -1,0 +1,87 @@
+<!-- Fixed Header -->
+<header class="app-header">
+  <div class="header-inner">
+    <div class="header-left">
+      <span class="material-symbols-outlined header-logo-icon">movie_filter</span>
+      <h1 class="header-title">CineTrack</h1>
+    </div>
+    <div class="header-right">
+      <div class="avatar">
+        <img [src]="profileImage" alt="Profile" />
+      </div>
+    </div>
+  </div>
+</header>
+
+<ion-content class="main-content">
+  <section class="settings-section">
+    <h2 class="page-title">Settings</h2>
+
+    @for (section of settingSections; track section.title; let si = $index) {
+      <div class="setting-group">
+        <h3 class="group-title">{{ section.title }}</h3>
+        <div class="group-card">
+          @for (item of section.items; track item.label; let ii = $index) {
+            <div
+              class="setting-item"
+              [class.setting-item-clickable]="!item.toggle"
+              (click)="!item.toggle && null"
+            >
+              <div class="setting-left">
+                <span class="material-symbols-outlined setting-icon">{{ item.icon }}</span>
+              </div>
+              <div class="setting-middle">
+                <span class="setting-label">{{ item.label }}</span>
+                @if (item.description) {
+                  <span class="setting-desc">{{ item.description }}</span>
+                }
+              </div>
+              <div class="setting-right">
+                @if (item.toggle) {
+                  <button
+                    class="toggle"
+                    [class.toggle-on]="item.toggled"
+                    (click)="toggleItem(si, ii)"
+                  >
+                    <span class="toggle-knob"></span>
+                  </button>
+                }
+                @if (item.action) {
+                  <span class="material-symbols-outlined setting-action">{{ item.action }}</span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Sign Out -->
+    <div class="sign-out-section">
+      <button class="sign-out-btn">
+        <span class="material-symbols-outlined sign-out-icon">logout</span>
+        Sign Out
+      </button>
+    </div>
+  </section>
+</ion-content>
+
+<!-- Bottom Navigation -->
+<nav class="bottom-nav">
+  <div class="nav-item" routerLink="/home">
+    <span class="material-symbols-outlined nav-icon">home</span>
+    <span class="nav-label">Home</span>
+  </div>
+  <div class="nav-item" routerLink="/search">
+    <span class="material-symbols-outlined nav-icon">search</span>
+    <span class="nav-label">Search</span>
+  </div>
+  <div class="nav-item" routerLink="/library">
+    <span class="material-symbols-outlined nav-icon">subscriptions</span>
+    <span class="nav-label">Library</span>
+  </div>
+  <div class="nav-item active">
+    <span class="material-symbols-outlined nav-icon" style="font-variation-settings: 'FILL' 1;">settings</span>
+    <span class="nav-label">Settings</span>
+  </div>
+</nav>

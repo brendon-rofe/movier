@@ -1,0 +1,107 @@
+<!-- Fixed Header -->
+<header class="app-header">
+  <div class="header-inner">
+    <div class="header-left">
+      <span class="material-symbols-outlined header-logo-icon">movie_filter</span>
+      <h1 class="header-title">CineTrack</h1>
+    </div>
+    <div class="header-right">
+      <div class="avatar">
+        <img [src]="profileImage" alt="Profile" />
+      </div>
+    </div>
+  </div>
+</header>
+
+<ion-content class="main-content">
+  <!-- Search Input -->
+  <section class="search-section">
+    <div class="search-bar">
+      <span class="material-symbols-outlined search-icon">search</span>
+      <input
+        class="search-input"
+        type="text"
+        placeholder="Search movies, series, genres..."
+        [(ngModel)]="query"
+      />
+      @if (query) {
+        <button class="clear-btn" (click)="query = ''">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      }
+    </div>
+  </section>
+
+  <!-- Results -->
+  @if (query && results.length > 0) {
+    <section class="results-section">
+      <p class="results-count">{{ results.length }} result{{ results.length === 1 ? '' : 's' }} found</p>
+      <div class="results-grid">
+        @for (item of results; track item.title) {
+          <div class="result-card">
+            <div class="result-img-wrap">
+              <img [src]="item.image" alt="" loading="lazy" />
+              <div class="result-type-badge">
+                <span class="material-symbols-outlined result-type-icon">
+                  {{ item.type === 'movie' ? 'movie' : 'tv' }}
+                </span>
+                <span class="result-type-label">{{ item.type === 'movie' ? 'Movie' : 'Series' }}</span>
+              </div>
+            </div>
+            <div class="result-body">
+              <h3 class="result-title">{{ item.title }}</h3>
+              <div class="result-footer">
+                <span class="result-subtitle">{{ item.subtitle }}</span>
+                <span class="result-year">{{ item.year }}</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Empty state -->
+  @if (query && results.length === 0) {
+    <section class="empty-section">
+      <span class="material-symbols-outlined empty-icon">search_off</span>
+      <h3 class="empty-title">No Results Found</h3>
+      <p class="empty-desc">Try adjusting your search or browse our popular categories.</p>
+    </section>
+  }
+
+  <!-- Default state -->
+  @if (!query) {
+    <section class="default-section">
+      <span class="material-symbols-outlined default-icon">travel_explore</span>
+      <h3 class="default-title">Discover Something New</h3>
+      <p class="default-desc">Type above to search through movies, TV series, and more.</p>
+      <div class="suggestions">
+        <span class="suggestion-tag" (click)="query = 'Interstellar'">Interstellar</span>
+        <span class="suggestion-tag" (click)="query = 'Horizons'">Horizons</span>
+        <span class="suggestion-tag" (click)="query = 'Night'">Night</span>
+        <span class="suggestion-tag" (click)="query = 'Dreams'">Dreams</span>
+      </div>
+    </section>
+  }
+</ion-content>
+
+<!-- Bottom Navigation -->
+<nav class="bottom-nav">
+  <div class="nav-item" routerLink="/home">
+    <span class="material-symbols-outlined nav-icon">home</span>
+    <span class="nav-label">Home</span>
+  </div>
+  <div class="nav-item active">
+    <span class="material-symbols-outlined nav-icon" style="font-variation-settings: 'FILL' 1;">search</span>
+    <span class="nav-label">Search</span>
+  </div>
+  <div class="nav-item" routerLink="/library">
+    <span class="material-symbols-outlined nav-icon">subscriptions</span>
+    <span class="nav-label">Library</span>
+  </div>
+  <div class="nav-item">
+    <span class="material-symbols-outlined nav-icon">settings</span>
+    <span class="nav-label">Settings</span>
+  </div>
+</nav>
