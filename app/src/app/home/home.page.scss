@@ -432,6 +432,69 @@ ion-content.main-content {
   transition: width 0.3s;
 }
 
+.card-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.card-lib-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--surface-container-high);
+  color: var(--on-surface);
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.card-lib-btn:hover {
+  background: var(--primary);
+  color: var(--on-primary);
+  border-color: var(--primary);
+}
+
+.card-lib-btn.in-library {
+  background: rgba(123, 208, 255, 0.15);
+  border-color: var(--secondary);
+  color: var(--secondary);
+}
+
+.card-lib-btn.in-library:hover {
+  background: rgba(123, 208, 255, 0.25);
+}
+
+.detail-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--surface-container-high);
+  color: var(--on-surface);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.detail-btn:hover {
+  background: var(--primary);
+  color: var(--on-primary);
+  border-color: var(--primary);
+}
+
+.card-btn-icon {
+  font-size: 18px;
+}
+
 .card-body {
   padding: 16px;
 }
@@ -753,3 +816,5 @@ ion-content.main-content {
   color: var(--on-surface-variant);
   margin: 4px 0 0 0;
 }
+
+

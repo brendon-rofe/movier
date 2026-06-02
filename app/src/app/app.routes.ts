@@ -18,6 +18,10 @@ export const routes: Routes = [
     loadComponent: () => import('./library/library.page').then((m) => m.LibraryPage),
   },
   {
+    path: 'detail/:id',
+    loadComponent: () => import('./detail/detail.page').then((m) => m.DetailPage),
+  },
+  {
     path: '',
     redirectTo: 'home',
     pathMatch: 'full',

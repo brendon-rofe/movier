@@ -1,0 +1,237 @@
+:host {
+  --bg: #0b1326;
+  --surface: #171f33;
+  --primary: #ffc174;
+  --secondary: #7bd0ff;
+  --on-surface: #dae2fd;
+  --on-surface-variant: #d8c3ad;
+  --on-primary: #472a00;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.backdrop-wrap {
+  position: relative;
+  height: 240px;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .backdrop-wrap {
+    height: 400px;
+  }
+}
+
+.backdrop {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.backdrop-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--bg) 0%, transparent 60%);
+}
+
+.back-btn {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  color: white;
+  cursor: pointer;
+  font-size: 24px;
+  transition: background 0.2s;
+}
+
+.back-btn:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.detail-content {
+  --background: var(--bg);
+  --padding-top: 0;
+}
+
+.detail-body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0 16px 48px;
+  margin-top: -80px;
+  position: relative;
+  z-index: 2;
+}
+
+@media (min-width: 768px) {
+  .detail-body {
+    flex-direction: row;
+    padding: 0 48px 48px;
+    margin-top: -120px;
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.poster-col {
+  flex-shrink: 0;
+  width: 100%;
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .poster-col {
+    max-width: 300px;
+    margin: 0;
+  }
+}
+
+.poster {
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.title {
+  font-family: 'Inter', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--on-surface);
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .title {
+    font-size: 40px;
+  }
+}
+
+.tagline {
+  font-size: 16px;
+  font-style: italic;
+  color: var(--on-surface-variant);
+  margin: 0;
+}
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--on-surface-variant);
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--primary);
+}
+
+.star-icon {
+  font-size: 18px;
+  color: #f5c518;
+}
+
+.meta-dot {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.genre-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.genre-tag {
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  background: rgba(23, 31, 51, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--secondary);
+}
+
+.overview {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--on-surface-variant);
+  margin: 0;
+  max-width: 640px;
+}
+
+.action-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.lib-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--surface);
+  color: var(--on-surface);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lib-btn:hover {
+  background: var(--primary);
+  color: var(--on-primary);
+  border-color: var(--primary);
+}
+
+.lib-btn.in-lib {
+  background: rgba(123, 208, 255, 0.15);
+  border-color: var(--secondary);
+  color: var(--secondary);
+}
+
+.lib-btn.in-lib:hover {
+  background: rgba(123, 208, 255, 0.25);
+}
+
+.lib-btn-icon {
+  font-size: 20px;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--on-surface-variant);
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+}

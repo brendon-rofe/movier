@@ -15,97 +15,44 @@
 </header>
 
 <ion-content class="main-content">
-  <!-- My Library Header -->
   <section class="library-hero">
     <h2 class="page-title">My Library</h2>
-    <p class="page-desc">Manage your collection across all devices.</p>
-
-    <!-- Tab Navigation -->
-    <div class="tabs">
-      <button
-        class="tab"
-        [class.tab-active]="activeTab === 'watchlist'"
-        (click)="switchTab('watchlist')"
-      >
-        Watchlist
-      </button>
-      <button
-        class="tab"
-        [class.tab-active]="activeTab === 'history'"
-        (click)="switchTab('history')"
-      >
-        History
-      </button>
-      <button
-        class="tab"
-        [class.tab-active]="activeTab === 'favorites'"
-        (click)="switchTab('favorites')"
-      >
-        Favorites
-      </button>
-    </div>
+    <p class="page-desc">Movies you've saved to your library.</p>
   </section>
 
-  <!-- Content Grid -->
   <section class="grid-section">
-    <div class="content-grid">
-      @for (item of items; track item.title) {
-        <div class="library-card">
-          <div class="card-img-wrap">
-            <img [src]="item.image" alt="" />
-            @if (item.badge && item.badgePosition !== 'top-left') {
-              <div class="badge badge-top-right">
-                <span class="badge-text">{{ item.badge }}</span>
+    @if ((libraryMovies | async); as movies) {
+      @if (movies.length === 0) {
+        <div class="empty-state">
+          <span class="material-symbols-outlined empty-icon">video_library</span>
+          <h3 class="empty-title">Your library is empty</h3>
+          <p class="empty-desc">Add movies from the home page to get started.</p>
+          <button class="browse-btn" routerLink="/home">Browse Popular Movies</button>
+        </div>
+      } @else {
+        <div class="content-grid">
+          @for (movie of movies; track movie.id) {
+            <div class="library-card">
+              <div class="card-img-wrap">
+                <img [src]="getImageUrl(movie.poster_path)" [alt]="movie.title" />
+                <div class="movie-rating">
+                  <span class="material-symbols-outlined rating-icon">star</span>
+                  <span>{{ movie.vote_average.toFixed(1) }}</span>
+                </div>
               </div>
-            }
-            @if (item.badge && item.badgePosition === 'top-left') {
-              <div class="badge badge-top-left">
-                <span class="material-symbols-outlined badge-star" style="font-variation-settings: 'FILL' 1;">star</span>
-                <span class="badge-text">{{ item.badge }}</span>
+              <div class="card-body">
+                <h3 class="card-title">{{ movie.title }}</h3>
+                <p class="card-year">{{ movie.release_date.substring(0, 4) }}</p>
+                <button class="remove-btn" (click)="removeFromLibrary(movie)">
+                  <span class="material-symbols-outlined remove-btn-icon">remove</span>
+                  Remove
+                </button>
               </div>
-            }
-            @if (item.progress !== undefined) {
-              <div class="progress-track">
-                <div class="progress-fill" [style.width.%]="item.progress"></div>
-              </div>
-            }
-          </div>
-          <div class="card-body">
-            <h3 class="card-title">{{ item.title }}</h3>
-            <div class="card-footer">
-              <span class="card-subtitle">{{ item.subtitle }}</span>
-              <span
-                class="material-symbols-outlined card-icon"
-                [class.icon-filled]="item.iconFilled"
-                [class.icon-primary]="item.icon === 'favorite'"
-                [class.icon-secondary]="item.iconFilled && item.icon !== 'favorite'"
-              >{{ item.icon }}</span>
             </div>
-          </div>
+          }
         </div>
       }
-
-      <!-- Weekly Summary Bento -->
-      <div class="weekly-card">
-        <div class="weekly-glow"></div>
-        <div class="weekly-content">
-          <h4 class="weekly-title">Weekly Summary</h4>
-          <p class="weekly-desc">{{ weeklyStats.description }}</p>
-          <div class="weekly-stats">
-            <div class="stat">
-              <span class="stat-value">{{ weeklyStats.hours }}</span>
-              <span class="stat-label">Watched</span>
-            </div>
-            <div class="stat-divider"></div>
-            <div class="stat">
-              <span class="stat-value">{{ weeklyStats.count }}</span>
-              <span class="stat-label">In List</span>
-            </div>
-          </div>
-          <button class="weekly-btn">Explore Recommendations</button>
-        </div>
-      </div>
-    </div>
+    }
   </section>
 </ion-content>
 

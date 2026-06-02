@@ -23,7 +23,7 @@
     <div class="movie-grid">
       @for (movie of popularMovies; track movie.id) {
         <div class="movie-card">
-          <div class="movie-poster">
+          <div class="movie-poster" (click)="openDetail(movie.id)" style="cursor: pointer;">
             <img [src]="getImageUrl(movie.poster_path)" [alt]="movie.title" />
             <div class="movie-rating">
               <span class="material-symbols-outlined rating-icon">star</span>
@@ -33,6 +33,21 @@
           <div class="movie-info">
             <h4 class="movie-title">{{ movie.title }}</h4>
             <p class="movie-year">{{ movie.release_date.substring(0, 4) }}</p>
+            <div class="card-buttons">
+              <button
+                class="card-lib-btn"
+                [class.in-library]="libraryService.isInLibrary(movie.id)"
+                (click)="toggleLibrary(movie)"
+              >
+                <span class="material-symbols-outlined card-btn-icon">
+                  {{ libraryService.isInLibrary(movie.id) ? 'check' : 'add' }}
+                </span>
+                {{ libraryService.isInLibrary(movie.id) ? 'In Library' : 'Add' }}
+              </button>
+              <button class="detail-btn" (click)="openDetail(movie.id)">
+                <span class="material-symbols-outlined card-btn-icon">info</span>
+              </button>
+            </div>
           </div>
         </div>
       }

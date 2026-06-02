@@ -1,0 +1,63 @@
+@if (movie) {
+  <div class="backdrop-wrap">
+    <img [src]="getImageUrl(movie.backdrop_path, 'w1280')" alt="" class="backdrop" />
+    <div class="backdrop-gradient"></div>
+    <button class="back-btn" (click)="goBack()">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+  </div>
+
+  <ion-content class="detail-content">
+    <div class="detail-body">
+      <div class="poster-col">
+        <img [src]="getImageUrl(movie.poster_path)" [alt]="movie.title" class="poster" />
+      </div>
+
+      <div class="info-col">
+        <h1 class="title">{{ movie.title }}</h1>
+
+        @if (movie.tagline) {
+          <p class="tagline">{{ movie.tagline }}</p>
+        }
+
+        <div class="meta-row">
+          <span class="rating">
+            <span class="material-symbols-outlined star-icon">star</span>
+            {{ movie.vote_average.toFixed(1) }}
+          </span>
+          <span class="meta-dot">&middot;</span>
+          <span>{{ movie.release_date | date:'yyyy' }}</span>
+          @if (movie.runtime) {
+            <span class="meta-dot">&middot;</span>
+            <span>{{ movie.runtime }} min</span>
+          }
+        </div>
+
+        <div class="genre-row">
+          @for (genre of movie.genres; track genre.id) {
+            <span class="genre-tag">{{ genre.name }}</span>
+          }
+        </div>
+
+        <p class="overview">{{ movie.overview }}</p>
+
+        <div class="action-row">
+          <button
+            class="lib-btn"
+            [class.in-lib]="libraryService.isInLibrary(movie.id)"
+            (click)="toggleLibrary()"
+          >
+            <span class="material-symbols-outlined lib-btn-icon">
+              {{ libraryService.isInLibrary(movie.id) ? 'check' : 'add' }}
+            </span>
+            {{ libraryService.isInLibrary(movie.id) ? 'In Library' : 'Add to Library' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </ion-content>
+} @else {
+  <ion-content class="detail-content">
+    <div class="loading">Loading...</div>
+  </ion-content>
+}

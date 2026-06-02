@@ -558,3 +558,114 @@ ion-content.main-content {
 .nav-item:hover .nav-label {
   color: var(--secondary);
 }
+
+.movie-rating {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.rating-icon {
+  font-size: 14px;
+  color: #f5c518;
+}
+
+.card-year {
+  font-size: 12px;
+  color: var(--on-surface-variant);
+  margin: 2px 0 0 0;
+}
+
+.remove-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: var(--on-surface-variant);
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.remove-btn:hover {
+  background: rgba(255, 77, 77, 0.15);
+  border-color: rgba(255, 77, 77, 0.3);
+  color: #ff4d4d;
+}
+
+.remove-btn-icon {
+  font-size: 16px;
+}
+
+/* ===== Empty State ===== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 64px;
+  color: var(--surface-container-high);
+  margin-bottom: 16px;
+}
+
+.empty-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--on-surface);
+  margin: 0 0 8px 0;
+}
+
+.empty-desc {
+  font-size: 14px;
+  color: var(--on-surface-variant);
+  margin: 0 0 24px 0;
+  line-height: 1.4;
+}
+
+.browse-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  background: var(--primary);
+  color: var(--on-primary);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.browse-btn:hover {
+  opacity: 0.9;
+}
+
+.browse-btn:active {
+  transform: scale(0.95);
+}
