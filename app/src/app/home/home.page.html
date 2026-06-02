@@ -15,113 +15,27 @@
 </header>
 
 <ion-content class="main-content">
-  <!-- Hero Section -->
-  <div class="hero">
-    <div class="hero-bg">
-      <img [src]="heroImage" alt="Trending Movie" />
-      <div class="hero-gradient-overlay"></div>
-      <div class="hero-side-overlay"></div>
-    </div>
-    <div class="hero-content">
-      <div class="hero-tags">
-        <span class="tag tag-primary">TRENDING NOW</span>
-        <span class="tag tag-outline">{{ trendingMovie.genres.join(' / ') }}</span>
-      </div>
-      <h2 class="hero-title">{{ trendingMovie.title }}</h2>
-      <p class="hero-desc">{{ trendingMovie.description }}</p>
-      <div class="hero-buttons">
-        <button class="btn btn-primary">
-          <span class="material-symbols-outlined btn-icon" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
-          Watch Trailer
-        </button>
-        <button class="btn btn-glass">
-          <span class="material-symbols-outlined btn-icon">add</span>
-          Watchlist
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Continue Watching -->
   <section class="section">
     <div class="section-header">
-      <h3 class="section-title">Continue Watching</h3>
-      <button class="see-all">
-        SEE ALL
-        <span class="material-symbols-outlined see-all-icon">arrow_forward</span>
-      </button>
+      <h3 class="section-title">Popular Movies</h3>
     </div>
-    <div class="scroll-x">
-      @for (item of continueWatching; track item.title) {
-        <div class="progress-card">
-          <div class="card-img-wrap">
-            <img [src]="item.image" alt="" />
-            <div class="card-play-overlay">
-              <span class="material-symbols-outlined play-icon" style="font-variation-settings: 'FILL' 1;">play_circle</span>
-            </div>
-            <div class="progress-bar-bg">
-              <div class="progress-bar-fill" [style.width.%]="item.progress"></div>
+
+    <div class="movie-grid">
+      @for (movie of popularMovies; track movie.id) {
+        <div class="movie-card">
+          <div class="movie-poster">
+            <img [src]="getImageUrl(movie.poster_path)" [alt]="movie.title" />
+            <div class="movie-rating">
+              <span class="material-symbols-outlined rating-icon">star</span>
+              <span>{{ movie.vote_average.toFixed(1) }}</span>
             </div>
           </div>
-          <div class="card-body">
-            <h4 class="card-title">{{ item.title }}</h4>
-            <p class="card-subtitle">{{ item.subtitle }}</p>
+          <div class="movie-info">
+            <h4 class="movie-title">{{ movie.title }}</h4>
+            <p class="movie-year">{{ movie.release_date.substring(0, 4) }}</p>
           </div>
         </div>
       }
-    </div>
-  </section>
-
-  <!-- Recommended for You -->
-  <section class="section section-last">
-    <h3 class="section-title">Recommended for You</h3>
-    <div class="bento-grid">
-      <!-- Large -->
-      <div class="bento-item bento-large">
-        <div class="bento-img-wrap">
-          <img [src]="categories[0].image" alt="" />
-          <div class="bento-gradient"></div>
-        </div>
-        <div class="bento-text">
-          <span class="bento-tag">{{ categories[0].tag }}</span>
-          <h4 class="bento-title">{{ categories[0].title }}</h4>
-          <p class="bento-subtitle">{{ categories[0].subtitle }}</p>
-        </div>
-      </div>
-
-      <!-- Medium: Action -->
-      <div class="bento-item bento-medium">
-        <div class="bento-img-wrap">
-          <img [src]="categories[1].image" alt="" />
-          <div class="bento-overlay"></div>
-        </div>
-        <div class="bento-center-text">
-          <span>{{ categories[1].title }}</span>
-        </div>
-      </div>
-
-      <!-- Medium: Mystery -->
-      <div class="bento-item bento-medium">
-        <div class="bento-img-wrap">
-          <img [src]="categories[2].image" alt="" />
-          <div class="bento-overlay"></div>
-        </div>
-        <div class="bento-center-text">
-          <span>{{ categories[2].title }}</span>
-        </div>
-      </div>
-
-      <!-- Wide -->
-      <div class="bento-item bento-wide">
-        <div class="bento-img-wrap">
-          <img [src]="categories[3].image" alt="" />
-          <div class="bento-wide-gradient"></div>
-        </div>
-        <div class="bento-text bento-text-left">
-          <h4 class="bento-title">{{ categories[3].title }}</h4>
-          <p class="bento-subtitle">{{ categories[3].subtitle }}</p>
-        </div>
-      </div>
     </div>
   </section>
 </ion-content>
