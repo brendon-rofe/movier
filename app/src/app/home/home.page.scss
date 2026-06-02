@@ -725,7 +725,7 @@ ion-content.main-content {
 /* ===== Movie Grid ===== */
 .movie-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(1, 1fr);
   gap: 16px;
   padding-top: 8px;
 }

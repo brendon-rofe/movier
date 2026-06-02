@@ -1,4 +1,5 @@
 :host {
+  background: #0b1326;
   --bg: #0b1326;
   --surface: #171f33;
   --primary: #ffc174;
@@ -6,6 +7,8 @@
   --on-surface: #dae2fd;
   --on-surface-variant: #d8c3ad;
   --on-primary: #472a00;
+  --surface-dim: #0b1326;
+  --surface-container-high: #222a3d;
 }
 
 .material-symbols-outlined {
@@ -13,14 +16,18 @@
 }
 
 .backdrop-wrap {
-  position: relative;
-  height: 240px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 360px;
   overflow: hidden;
+  z-index: 0;
 }
 
 @media (min-width: 768px) {
   .backdrop-wrap {
-    height: 400px;
+    height: 500px;
   }
 }
 
@@ -33,14 +40,14 @@
 .backdrop-gradient {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, var(--bg) 0%, transparent 60%);
+  background: linear-gradient(to bottom, transparent 40%, var(--bg) 100%);
 }
 
 .back-btn {
-  position: absolute;
+  position: fixed;
   top: 16px;
   left: 16px;
-  z-index: 10;
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -61,8 +68,16 @@
 }
 
 .detail-content {
-  --background: var(--bg);
-  --padding-top: 0;
+  --background: transparent;
+  --padding-top: 280px;
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 768px) {
+  .detail-content {
+    --padding-top: 400px;
+  }
 }
 
 .detail-body {
@@ -70,16 +85,13 @@
   flex-direction: column;
   gap: 24px;
   padding: 0 16px 48px;
-  margin-top: -80px;
   position: relative;
-  z-index: 2;
 }
 
 @media (min-width: 768px) {
   .detail-body {
     flex-direction: row;
     padding: 0 48px 48px;
-    margin-top: -120px;
     max-width: 1280px;
     margin-left: auto;
     margin-right: auto;
@@ -90,20 +102,22 @@
   flex-shrink: 0;
   width: 100%;
   max-width: 200px;
-  margin: 0 auto;
+  margin: -120px auto 0;
+  position: relative;
+  z-index: 3;
 }
 
 @media (min-width: 768px) {
   .poster-col {
     max-width: 300px;
-    margin: 0;
+    margin: -180px 0 0;
   }
 }
 
 .poster {
   width: 100%;
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
 }
 
 .info-col {

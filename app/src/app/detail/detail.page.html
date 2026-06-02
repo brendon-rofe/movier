@@ -2,10 +2,11 @@
   <div class="backdrop-wrap">
     <img [src]="getImageUrl(movie.backdrop_path, 'w1280')" alt="" class="backdrop" />
     <div class="backdrop-gradient"></div>
-    <button class="back-btn" (click)="goBack()">
-      <span class="material-symbols-outlined">arrow_back</span>
-    </button>
   </div>
+
+  <button class="back-btn" (click)="goBack()">
+    <span class="material-symbols-outlined">arrow_back</span>
+  </button>
 
   <ion-content class="detail-content">
     <div class="detail-body">

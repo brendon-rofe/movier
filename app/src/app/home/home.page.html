@@ -42,7 +42,7 @@
                 <span class="material-symbols-outlined card-btn-icon">
                   {{ libraryService.isInLibrary(movie.id) ? 'check' : 'add' }}
                 </span>
-                {{ libraryService.isInLibrary(movie.id) ? 'In Library' : 'Add' }}
+                {{ libraryService.isInLibrary(movie.id) ? 'In Library' : 'Add to Library' }}
               </button>
               <button class="detail-btn" (click)="openDetail(movie.id)">
                 <span class="material-symbols-outlined card-btn-icon">info</span>
