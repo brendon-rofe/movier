@@ -80,17 +80,7 @@ export class SettingsPage implements OnInit, OnDestroy {
       title: 'Preferences',
       items: [
         { icon: 'notifications', label: 'Notifications', description: 'Manage push and email alerts', action: 'chevron_right' },
-        { icon: 'language', label: 'Language & Region', description: 'English (US)', action: 'chevron_right' },
         { icon: 'dark_mode', label: 'Dark Mode', description: 'Always on', toggle: true, toggled: true },
-        { icon: 'hd', label: 'Auto-Play Next Episode', description: 'Continue watching seamlessly', toggle: true, toggled: true },
-      ],
-    },
-    {
-      title: 'Playback',
-      items: [
-        { icon: 'speed', label: 'Playback Speed', description: 'Normal (1.0x)', action: 'chevron_right' },
-        { icon: 'subtitles', label: 'Subtitles & Captions', description: 'Always show subtitles', action: 'chevron_right' },
-        { icon: 'download', label: 'Download Quality', description: 'High (1080p)', action: 'chevron_right' },
       ],
     },
     {
