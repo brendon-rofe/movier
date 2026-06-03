@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model LibraryItem {
+  id          Int     @id @default(autoincrement())
+  tmdbId      Int
+  title       String
+  overview    String  @db.Text
+  posterPath  String?
+  backdropPath String?
+  voteAverage Float
+  releaseDate String?
+  mediaType   String  @default("movie") // "movie" | "tv"
+
+  movieTrack MovieTrack?
+  tvTrack    TvTrack?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([tmdbId, mediaType])
+  @@map("library_items")
+}
+
+model MovieTrack {
+  id     Int    @id @default(autoincrement())
+  status String @default("want_to_watch") // want_to_watch | watching | watched | dropped
+
+  libraryItemId Int @unique
+  libraryItem   LibraryItem @relation(fields: [libraryItemId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("movie_tracks")
+}
+
+model TvTrack {
+  id       Int    @id @default(autoincrement())
+  totalEpisodes Int @default(0)
+
+  libraryItemId Int @unique
+  libraryItem   LibraryItem @relation(fields: [libraryItemId], references: [id], onDelete: Cascade)
+
+  episodes  TvEpisode[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tv_tracks")
+}
+
+model TvEpisode {
+  id           Int  @id @default(autoincrement())
+  seasonNumber Int
+  episodeNumber Int
+  watched      Boolean @default(false)
+
+  tvTrackId Int
+  tvTrack   TvTrack @relation(fields: [tvTrackId], references: [id], onDelete: Cascade)
+
+  @@unique([tvTrackId, seasonNumber, episodeNumber])
+  @@map("tv_episodes")
+}
