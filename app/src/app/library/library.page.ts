@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
 import { AsyncPipe } from '@angular/common';
@@ -12,7 +12,7 @@ import { TrackingService } from '../services/tracking.service';
   styleUrls: ['library.page.scss'],
   imports: [IonContent, RouterLink, AsyncPipe],
 })
-export class LibraryPage {
+export class LibraryPage implements OnInit {
   view: 'watchlist' | 'seen' = 'watchlist';
   libraryMovies = this.libraryService.library$;
 
@@ -22,6 +22,16 @@ export class LibraryPage {
     private router: Router,
     public tracking: TrackingService,
   ) {}
+
+  ngOnInit() {
+    this.libraryService.library$.subscribe((items) => {
+      for (const item of items) {
+        if (item.media_type === 'tv') {
+          this.tracking.loadTvData(item.id);
+        }
+      }
+    });
+  }
 
   get filteredMovies(): Movie[] {
     return this.libraryService.library.value.filter((m) => {

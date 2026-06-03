@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, firstValueFrom } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export type MovieWatchStatus = 'want_to_watch' | 'watching' | 'watched' | 'dropped';
 
@@ -18,14 +20,23 @@ export interface TvTrackData {
   totalEpisodes?: number;
 }
 
+interface TvTrackResponse {
+  episodes: EpisodeCheck[];
+  totalEpisodes: number;
+}
+
 interface TrackStore {
   [key: string]: MovieTrackData | TvTrackData;
 }
 
 @Injectable({ providedIn: 'root' })
 export class TrackingService {
+  private api = environment.apiBaseUrl;
   private store = new BehaviorSubject<TrackStore>(this.load());
   store$: Observable<TrackStore> = this.store.asObservable();
+  private tvCache = new Map<number, TvTrackData>();
+
+  constructor(private http: HttpClient) {}
 
   private key(id: number, type: 'movie' | 'tv'): string {
     return `${type}_${id}`;
@@ -43,6 +54,24 @@ export class TrackingService {
     localStorage.setItem('cineTrack_tracking', JSON.stringify(this.store.value));
   }
 
+  private async ensureTvCache(tvId: number) {
+    if (this.tvCache.has(tvId)) return;
+    await this.fetchTvData(tvId);
+  }
+
+  private async fetchTvData(tvId: number) {
+    try {
+      const data = await firstValueFrom(this.http.get<TvTrackResponse>(`${this.api}/tracking/tv/${tvId}/episodes`));
+      this.tvCache.set(tvId, { episodes: data.episodes, totalEpisodes: data.totalEpisodes });
+    } catch {
+      this.tvCache.set(tvId, { episodes: [] });
+    }
+  }
+
+  async loadTvData(tvId: number) {
+    await this.fetchTvData(tvId);
+  }
+
   getMovieData(id: number): MovieTrackData | null {
     const data = this.store.value[this.key(id, 'movie')];
     return data && 'status' in data ? (data as MovieTrackData) : null;
@@ -56,90 +85,69 @@ export class TrackingService {
   }
 
   getTvData(id: number): TvTrackData | null {
-    const data = this.store.value[this.key(id, 'tv')];
-    return data && 'episodes' in data ? (data as TvTrackData) : null;
+    return this.tvCache.get(id) ?? null;
   }
 
-  toggleEpisode(tvId: number, season: number, episode: number) {
-    const current = { ...this.store.value };
-    const key = this.key(tvId, 'tv');
-    let data = current[key] as TvTrackData | undefined;
-    if (!data) {
-      data = { episodes: [] };
+  async toggleEpisode(tvId: number, season: number, episode: number) {
+    try {
+      const data = await firstValueFrom(this.http.post<TvTrackResponse>(
+        `${this.api}/tracking/tv/${tvId}/episodes/toggle`,
+        { season, episode },
+      ));
+      this.tvCache.set(tvId, { episodes: data.episodes, totalEpisodes: data.totalEpisodes });
+    } catch {
+      await this.ensureTvCache(tvId);
     }
-    const existing = data.episodes.find((e) => e.season === season && e.episode === episode);
-    if (existing) {
-      existing.watched = !existing.watched;
-    } else {
-      data.episodes.push({ season, episode, watched: true });
-    }
-    current[key] = data;
-    this.store.next(current);
-    this.save();
   }
 
   isEpisodeWatched(tvId: number, season: number, episode: number): boolean {
-    const data = this.getTvData(tvId);
+    const data = this.tvCache.get(tvId);
     if (!data) return false;
     const found = data.episodes.find((e) => e.season === season && e.episode === episode);
     return found?.watched ?? false;
   }
 
   getWatchedCount(tvId: number, season: number): number {
-    const data = this.getTvData(tvId);
+    const data = this.tvCache.get(tvId);
     if (!data) return 0;
     return data.episodes.filter((e) => e.season === season && e.watched).length;
   }
 
-  setTvTotalEpisodes(tvId: number, total: number) {
-    const current = { ...this.store.value };
-    const key = this.key(tvId, 'tv');
-    let data = current[key] as TvTrackData | undefined;
-    if (!data) {
-      data = { episodes: [] };
+  async setTvTotalEpisodes(tvId: number, total: number) {
+    try {
+      await firstValueFrom(this.http.put(`${this.api}/tracking/tv/${tvId}/total-episodes`, { totalEpisodes: total }));
+    } catch { /* ignore */ }
+    await this.ensureTvCache(tvId);
+    const cached = this.tvCache.get(tvId);
+    if (cached) {
+      cached.totalEpisodes = total;
     }
-    data.totalEpisodes = total;
-    current[key] = data;
-    this.store.next(current);
-    this.save();
   }
 
   isTvFullyWatched(tvId: number): boolean {
-    const data = this.getTvData(tvId);
+    const data = this.tvCache.get(tvId);
     if (!data || !data.totalEpisodes) return false;
     const watchedCount = data.episodes.filter((e) => e.watched).length;
     return watchedCount >= data.totalEpisodes;
   }
 
   isSeasonFullyWatched(tvId: number, season: number, totalEpisodes: number): boolean {
-    const data = this.getTvData(tvId);
+    const data = this.tvCache.get(tvId);
     if (!data) return false;
     const seasonEps = data.episodes.filter((e) => e.season === season);
     if (seasonEps.length === 0) return false;
     return seasonEps.length === totalEpisodes && seasonEps.every((e) => e.watched);
   }
 
-  toggleSeason(tvId: number, season: number, totalEpisodes: number) {
-    const current = { ...this.store.value };
-    const key = this.key(tvId, 'tv');
-    let data = current[key] as TvTrackData | undefined;
-    if (!data) {
-      data = { episodes: [] };
+  async toggleSeason(tvId: number, season: number, totalEpisodes: number) {
+    try {
+      const data = await firstValueFrom(this.http.post<TvTrackResponse>(
+        `${this.api}/tracking/tv/${tvId}/season/toggle`,
+        { season, totalEpisodes },
+      ));
+      this.tvCache.set(tvId, { episodes: data.episodes, totalEpisodes: data.totalEpisodes });
+    } catch {
+      await this.ensureTvCache(tvId);
     }
-
-    const allWatched = this.isSeasonFullyWatched(tvId, season, totalEpisodes);
-
-    for (let ep = 1; ep <= totalEpisodes; ep++) {
-      const existing = data.episodes.find((e) => e.season === season && e.episode === ep);
-      if (existing) {
-        existing.watched = !allWatched;
-      } else {
-        data.episodes.push({ season, episode: ep, watched: !allWatched });
-      }
-    }
-
-    current[key] = data;
-    this.store.next(current);
-    this.save();
   }
 }

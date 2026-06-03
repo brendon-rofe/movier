@@ -56,9 +56,9 @@ export class TrackPage implements OnInit {
         this.movie = data;
       });
     } else {
-      this.movieService.getTvDetails(id).subscribe((data) => {
+      this.movieService.getTvDetails(id).subscribe(async (data) => {
         this.tvShow = data;
-        this.tracking.setTvTotalEpisodes(id, data.number_of_episodes);
+        await this.tracking.setTvTotalEpisodes(id, data.number_of_episodes);
         this.selectedSeason = 1;
         this.loadSeason(1);
       });

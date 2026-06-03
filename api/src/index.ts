@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import tmdbRoutes from './routes/tmdb.js';
 import libraryRoutes from './routes/library.js';
+import trackingRoutes from './routes/tracking.js';
 
 const app = express();
 const port = process.env.PORT || 3100;
@@ -23,6 +24,7 @@ app.get('/api/health', (_req, res) => {
 
 app.use('/api', tmdbRoutes);
 app.use('/api/library', libraryRoutes);
+app.use('/api/tracking', trackingRoutes);
 
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error(err);
