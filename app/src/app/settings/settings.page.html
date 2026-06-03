@@ -15,6 +15,15 @@
 
 <ion-content class="main-content">
   <section class="settings-section">
+    @if (user) {
+      <div class="user-banner">
+        <span class="material-symbols-outlined user-banner-icon">person</span>
+        <div class="user-banner-info">
+          <span class="user-banner-name">{{ user.username }}</span>
+          <span class="user-banner-label">Signed in</span>
+        </div>
+      </div>
+    }
     <h2 class="page-title">Settings</h2>
 
     @for (section of settingSections; track section.title; let si = $index) {
@@ -58,7 +67,7 @@
 
     <!-- Sign Out -->
     <div class="sign-out-section">
-      <button class="sign-out-btn">
+      <button class="sign-out-btn" (click)="signOut()">
         <span class="material-symbols-outlined sign-out-icon">logout</span>
         Sign Out
       </button>

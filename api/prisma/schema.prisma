@@ -7,6 +7,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id           Int           @id @default(autoincrement())
+  username     String        @unique
+  passwordHash String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  libraryItems LibraryItem[]
+
+  @@map("users")
+}
+
 model LibraryItem {
   id          Int      @id @default(autoincrement())
   tmdbId      Int
@@ -19,13 +30,16 @@ model LibraryItem {
   mediaType   String   @default("movie") // "movie" | "tv"
   genreIds    String?  // JSON array stored as string
 
+  userId Int
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   movieTrack MovieTrack?
   tvTrack    TvTrack?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([tmdbId, mediaType])
+  @@unique([userId, tmdbId, mediaType])
   @@map("library_items")
 }
 

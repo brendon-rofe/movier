@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import tmdbRoutes from './routes/tmdb.js';
+import authRoutes from './routes/auth.js';
 import libraryRoutes from './routes/library.js';
 import trackingRoutes from './routes/tracking.js';
 
@@ -23,6 +24,7 @@ app.get('/api/health', (_req, res) => {
 });
 
 app.use('/api', tmdbRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/library', libraryRoutes);
 app.use('/api/tracking', trackingRoutes);
 

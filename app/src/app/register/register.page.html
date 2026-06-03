@@ -1,0 +1,80 @@
+<header class="app-header">
+  <div class="header-inner">
+    <div class="header-left">
+      <span class="material-symbols-outlined header-logo-icon">movie_filter</span>
+      <h1 class="header-title">CineTrack</h1>
+    </div>
+  </div>
+</header>
+
+<ion-content class="main-content">
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-icon-wrap">
+        <span class="material-symbols-outlined auth-icon">person_add</span>
+      </div>
+      <h2 class="auth-title">Create Account</h2>
+      <p class="auth-subtitle">Sign up to start tracking your movies & series</p>
+
+      @if (error) {
+        <div class="error-msg">{{ error }}</div>
+      }
+
+      <div class="input-group">
+        <label class="input-label">Username</label>
+        <div class="input-wrap">
+          <span class="material-symbols-outlined input-icon">person</span>
+          <input
+            class="auth-input"
+            type="text"
+            placeholder="Choose a username"
+            [(ngModel)]="username"
+            (keydown.enter)="register()"
+          />
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Password</label>
+        <div class="input-wrap">
+          <span class="material-symbols-outlined input-icon">lock</span>
+          <input
+            class="auth-input"
+            type="password"
+            placeholder="Choose a password"
+            [(ngModel)]="password"
+            (keydown.enter)="register()"
+          />
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Confirm Password</label>
+        <div class="input-wrap">
+          <span class="material-symbols-outlined input-icon">lock</span>
+          <input
+            class="auth-input"
+            type="password"
+            placeholder="Confirm your password"
+            [(ngModel)]="confirmPassword"
+            (keydown.enter)="register()"
+          />
+        </div>
+      </div>
+
+      <button class="auth-btn" (click)="register()" [disabled]="loading">
+        @if (loading) {
+          Creating account...
+        } @else {
+          Create Account
+        }
+        <span class="material-symbols-outlined auth-btn-icon">arrow_forward</span>
+      </button>
+
+      <p class="auth-link">
+        Already have an account?
+        <a routerLink="/login">Sign in</a>
+      </p>
+    </div>
+  </div>
+</ion-content>

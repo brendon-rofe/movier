@@ -1,11 +1,14 @@
 import { Router } from 'express';
 import { prisma } from '../prisma.js';
+import { authenticate, AuthRequest } from '../middleware/auth.js';
 
 const router = Router();
 
-async function ensureTvTrack(tmdbId: number) {
+router.use(authenticate);
+
+async function ensureTvTrack(userId: number, tmdbId: number) {
   const item = await prisma.libraryItem.findUnique({
-    where: { tmdbId_mediaType: { tmdbId, mediaType: 'tv' } },
+    where: { userId_tmdbId_mediaType: { userId, tmdbId, mediaType: 'tv' } },
   });
   if (!item) return null;
 
@@ -16,9 +19,9 @@ async function ensureTvTrack(tmdbId: number) {
   return { item, track };
 }
 
-router.get('/tv/:tmdbId/episodes', async (req, res, next) => {
+router.get('/tv/:tmdbId/episodes', async (req: AuthRequest, res, next) => {
   try {
-    const result = await ensureTvTrack(Number(req.params.tmdbId));
+    const result = await ensureTvTrack(req.user!.userId, Number(req.params.tmdbId));
     if (!result) return res.json({ episodes: [], totalEpisodes: 0 });
 
     const episodes = await prisma.tvEpisode.findMany({ where: { tvTrackId: result.track.id } });
@@ -29,9 +32,9 @@ router.get('/tv/:tmdbId/episodes', async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
-router.post('/tv/:tmdbId/episodes/toggle', async (req, res, next) => {
+router.post('/tv/:tmdbId/episodes/toggle', async (req: AuthRequest, res, next) => {
   try {
-    const result = await ensureTvTrack(Number(req.params.tmdbId));
+    const result = await ensureTvTrack(req.user!.userId, Number(req.params.tmdbId));
     if (!result) return res.status(404).json({ error: 'TV show not in library' });
 
     const { season, episode } = req.body;
@@ -58,9 +61,9 @@ router.post('/tv/:tmdbId/episodes/toggle', async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
-router.post('/tv/:tmdbId/season/toggle', async (req, res, next) => {
+router.post('/tv/:tmdbId/season/toggle', async (req: AuthRequest, res, next) => {
   try {
-    const result = await ensureTvTrack(Number(req.params.tmdbId));
+    const result = await ensureTvTrack(req.user!.userId, Number(req.params.tmdbId));
     if (!result) return res.status(404).json({ error: 'TV show not in library' });
 
     const { season, totalEpisodes } = req.body;
@@ -90,9 +93,9 @@ router.post('/tv/:tmdbId/season/toggle', async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
-router.put('/tv/:tmdbId/total-episodes', async (req, res, next) => {
+router.put('/tv/:tmdbId/total-episodes', async (req: AuthRequest, res, next) => {
   try {
-    const result = await ensureTvTrack(Number(req.params.tmdbId));
+    const result = await ensureTvTrack(req.user!.userId, Number(req.params.tmdbId));
     if (!result) return res.status(404).json({ error: 'TV show not in library' });
 
     await prisma.tvTrack.update({

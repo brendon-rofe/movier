@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
+import { AuthService } from '../services/auth.service';
 
 interface SettingItem {
   icon: string;
@@ -23,6 +24,8 @@ interface SettingSection {
   imports: [IonContent, RouterLink],
 })
 export class SettingsPage {
+  user = this.auth.getUser();
+
   settingSections: SettingSection[] = [
     {
       title: 'Profile',
@@ -57,6 +60,13 @@ export class SettingsPage {
       ],
     },
   ];
+
+  constructor(private auth: AuthService, private router: Router) {}
+
+  signOut() {
+    this.auth.logout();
+    this.router.navigate(['/login']);
+  }
 
   toggleItem(sectionIndex: number, itemIndex: number) {
     const item = this.settingSections[sectionIndex].items[itemIndex];

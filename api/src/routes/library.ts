@@ -1,16 +1,19 @@
 import { Router } from 'express';
 import { prisma } from '../prisma.js';
+import { authenticate, AuthRequest } from '../middleware/auth.js';
 
 const router = Router();
 
-router.get('/', async (_req, res, next) => {
+router.use(authenticate);
+
+router.get('/', async (req: AuthRequest, res, next) => {
   try {
-    const items = await prisma.libraryItem.findMany();
+    const items = await prisma.libraryItem.findMany({ where: { userId: req.user!.userId } });
     res.json(items);
   } catch (e) { next(e); }
 });
 
-router.post('/', async (req, res, next) => {
+router.post('/', async (req: AuthRequest, res, next) => {
   try {
     const { tmdbId, title, overview, posterPath, backdropPath, voteAverage, releaseDate, mediaType, genreIds } = req.body;
     const item = await prisma.libraryItem.create({
@@ -24,6 +27,7 @@ router.post('/', async (req, res, next) => {
         releaseDate,
         mediaType: mediaType || 'movie',
         genreIds: genreIds ? JSON.stringify(genreIds) : null,
+        userId: req.user!.userId,
       },
     });
     res.status(201).json(item);
@@ -35,21 +39,21 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-router.get('/:tmdbId', async (req, res, next) => {
+router.get('/:tmdbId', async (req: AuthRequest, res, next) => {
   try {
     const mediaType = (req.query.type as string) || 'movie';
     const item = await prisma.libraryItem.findUnique({
-      where: { tmdbId_mediaType: { tmdbId: Number(req.params.tmdbId), mediaType } },
+      where: { userId_tmdbId_mediaType: { userId: req.user!.userId, tmdbId: Number(req.params.tmdbId), mediaType } },
     });
     res.json({ exists: !!item });
   } catch (e) { next(e); }
 });
 
-router.delete('/:tmdbId', async (req, res, next) => {
+router.delete('/:tmdbId', async (req: AuthRequest, res, next) => {
   try {
     const mediaType = (req.query.type as string) || 'movie';
     await prisma.libraryItem.delete({
-      where: { tmdbId_mediaType: { tmdbId: Number(req.params.tmdbId), mediaType } },
+      where: { userId_tmdbId_mediaType: { userId: req.user!.userId, tmdbId: Number(req.params.tmdbId), mediaType } },
     });
     res.json({ ok: true });
   } catch (e: any) {
