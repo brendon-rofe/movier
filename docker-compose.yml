@@ -1,17 +1,16 @@
 services:
-  mysql:
-    image: mysql:8
+  postgres:
+    image: postgres:16
     container_name: cinetrack-db
     restart: unless-stopped
     ports:
-      - "3306:3306"
+      - "5433:5432"
     environment:
-      MYSQL_USER: cinetrack
-      MYSQL_PASSWORD: cinetrack
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: cinetrack
+      POSTGRES_USER: cinetrack
+      POSTGRES_PASSWORD: cinetrack
+      POSTGRES_DB: cinetrack
     volumes:
-      - mysqldata:/var/lib/mysql
+      - pgdata:/var/lib/postgresql/data
 
 volumes:
-  mysqldata:
+  pgdata:

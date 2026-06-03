@@ -26,7 +26,7 @@ router.post('/', async (req: AuthRequest, res, next) => {
         voteAverage: voteAverage ?? 0,
         releaseDate,
         mediaType: mediaType || 'movie',
-        genreIds: genreIds ? JSON.stringify(genreIds) : null,
+        genreIds: genreIds ?? null,
         userId: req.user!.userId,
       },
     });

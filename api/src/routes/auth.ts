@@ -19,6 +19,11 @@ router.post('/register', async (req, res, next) => {
       return res.status(409).json({ error: 'Username already taken' });
     }
 
+    const userCount = await prisma.user.count();
+    if (userCount >= 10) {
+      return res.status(400).json({ error: 'Registration is full (maximum 10 users)' });
+    }
+
     const passwordHash = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({ data: { username, passwordHash } });
 

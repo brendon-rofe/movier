@@ -96,7 +96,7 @@ router.post('/:id/accept', async (req: AuthRequest, res, next) => {
             voteAverage: ownerItem.voteAverage,
             releaseDate: ownerItem.releaseDate,
             mediaType: sw.mediaType,
-            genreIds: ownerItem.genreIds,
+            genreIds: ownerItem.genreIds as any,
           },
         });
       }

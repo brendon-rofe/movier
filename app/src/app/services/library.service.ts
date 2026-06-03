@@ -14,7 +14,7 @@ interface LibraryItemResponse {
   voteAverage: number;
   releaseDate: string | null;
   mediaType: string;
-  genreIds: string | null;
+  genreIds: number[] | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -28,7 +28,7 @@ function toMovie(item: LibraryItemResponse): Movie {
     backdrop_path: item.backdropPath,
     vote_average: item.voteAverage,
     release_date: item.releaseDate || '',
-    genre_ids: item.genreIds ? JSON.parse(item.genreIds) : [],
+    genre_ids: item.genreIds ?? [],
     media_type: item.mediaType as 'movie' | 'tv',
   };
 }

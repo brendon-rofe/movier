@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -82,7 +82,7 @@ model LibraryItem {
   voteAverage Float
   releaseDate String?
   mediaType   String   @default("movie") // "movie" | "tv"
-  genreIds    String?  // JSON array stored as string
+  genreIds    Json?
 
   userId Int
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
