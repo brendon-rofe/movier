@@ -123,72 +123,47 @@ export interface SeasonDetails {
   overview: string;
 }
 
-interface TMDBMovieResponse {
-  results: Movie[];
-}
-
-interface TMDBTvResponse {
-  results: TvShow[];
-}
-
-interface TMDBMultiSearchResponse {
-  results: SearchResultItem[];
-}
-
 @Injectable({ providedIn: 'root' })
 export class MovieService {
-  private baseUrl = environment.tmdbBaseUrl;
-  private apiKey = environment.tmdbApiKey;
+  private baseUrl = environment.apiBaseUrl;
   private imageBase = environment.tmdbImageBaseUrl;
 
   constructor(private http: HttpClient) {}
 
   getPopularMovies(page: number = 1): Observable<Movie[]> {
-    return this.http
-      .get<TMDBMovieResponse>(`${this.baseUrl}/movie/popular`, {
-        params: { api_key: this.apiKey, page: page.toString() },
-      })
-      .pipe(map((res) => res.results));
+    return this.http.get<Movie[]>(`${this.baseUrl}/movies/popular`, {
+      params: { page: page.toString() },
+    });
   }
 
   getPopularTvShows(page: number = 1): Observable<TvShow[]> {
-    return this.http
-      .get<TMDBTvResponse>(`${this.baseUrl}/tv/popular`, {
-        params: { api_key: this.apiKey, page: page.toString() },
-      })
-      .pipe(map((res) => res.results));
+    return this.http.get<TvShow[]>(`${this.baseUrl}/tv/popular`, {
+      params: { page: page.toString() },
+    });
   }
 
   getMovieDetails(id: number): Observable<MovieDetails> {
-    return this.http.get<MovieDetails>(`${this.baseUrl}/movie/${id}`, {
-      params: { api_key: this.apiKey },
-    });
+    return this.http.get<MovieDetails>(`${this.baseUrl}/movie/${id}`);
   }
 
   getTvDetails(id: number): Observable<TvDetails> {
-    return this.http.get<TvDetails>(`${this.baseUrl}/tv/${id}`, {
-      params: { api_key: this.apiKey },
-    });
+    return this.http.get<TvDetails>(`${this.baseUrl}/tv/${id}`);
   }
 
   getSeasonDetails(tvId: number, seasonNumber: number): Observable<SeasonDetails> {
-    return this.http.get<SeasonDetails>(`${this.baseUrl}/tv/${tvId}/season/${seasonNumber}`, {
-      params: { api_key: this.apiKey },
-    });
+    return this.http.get<SeasonDetails>(`${this.baseUrl}/tv/${tvId}/season/${seasonNumber}`);
   }
 
   getEpisodeDetails(tvId: number, seasonNumber: number, episodeNumber: number): Observable<EpisodeDetails> {
-    return this.http.get<EpisodeDetails>(`${this.baseUrl}/tv/${tvId}/season/${seasonNumber}/episode/${episodeNumber}`, {
-      params: { api_key: this.apiKey },
-    });
+    return this.http.get<EpisodeDetails>(`${this.baseUrl}/tv/${tvId}/season/${seasonNumber}/episode/${episodeNumber}`);
   }
 
   searchMulti(query: string, page: number = 1): Observable<SearchResultItem[]> {
-    return this.http
-      .get<TMDBMultiSearchResponse>(`${this.baseUrl}/search/multi`, {
-        params: { api_key: this.apiKey, query, page: page.toString() },
-      })
-      .pipe(map((res) => res.results.filter((r) => r.media_type === 'movie' || r.media_type === 'tv')));
+    return this.http.get<SearchResultItem[]>(`${this.baseUrl}/search/multi`, {
+      params: { query, page: page.toString() },
+    }).pipe(
+      map((results) => results.filter((r) => r.media_type === 'movie' || r.media_type === 'tv')),
+    );
   }
 
   getImageUrl(path: string | null, size: string = 'w500'): string {
