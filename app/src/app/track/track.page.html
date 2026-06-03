@@ -87,8 +87,11 @@
         @if (currentSeason) {
           <div class="episode-list">
             @for (ep of currentSeason.episodes; track ep.id) {
-              <label class="ep-row">
+              <div class="ep-row" (click)="openEpisodeDetail(ep)">
                 <div class="ep-left">
+                  @if (ep.still_path) {
+                    <img [src]="getImageUrl(ep.still_path, 'w185')" alt="" class="ep-thumb" />
+                  }
                   <span class="ep-num">{{ ep.episode_number }}</span>
                   <div>
                     <span class="ep-name">{{ ep.name }}</span>
@@ -100,7 +103,7 @@
                 <div
                   class="ep-check"
                   [class.checked]="tracking.isEpisodeWatched(tvShow.id, ep.season_number, ep.episode_number)"
-                  (click)="toggleEpisode(ep)"
+                  (click)="$event.stopPropagation(); toggleEpisode(ep)"
                 >
                   @if (tracking.isEpisodeWatched(tvShow.id, ep.season_number, ep.episode_number)) {
                     <span class="material-symbols-outlined check-icon">check_circle</span>
@@ -108,10 +111,48 @@
                     <span class="material-symbols-outlined check-icon">radio_button_unchecked</span>
                   }
                 </div>
-              </label>
+              </div>
             }
           </div>
         }
+      }
+
+      @if (episodeLoading) {
+        <p class="loading-text">Loading episode details...</p>
+      }
+
+      @if (selectedEpisode) {
+        <div class="ep-overlay" (click)="closeEpisodeDetail()">
+          <div class="ep-modal" (click)="$event.stopPropagation()">
+            <button class="ep-modal-close" (click)="closeEpisodeDetail()">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+            @if (selectedEpisode.still_path) {
+              <img [src]="getImageUrl(selectedEpisode.still_path, 'w780')" alt="" class="ep-modal-img" />
+            }
+            <div class="ep-modal-body">
+              <h2 class="ep-modal-title">{{ selectedEpisode.episode_number }}. {{ selectedEpisode.name }}</h2>
+              <div class="ep-modal-meta">
+                @if (selectedEpisode.air_date) {
+                  <span>{{ selectedEpisode.air_date }}</span>
+                }
+                @if (selectedEpisode.runtime) {
+                  <span>&middot; {{ selectedEpisode.runtime }} min</span>
+                }
+                <span>&middot; &#9733; {{ selectedEpisode.vote_average.toFixed(1) }}</span>
+              </div>
+              @if (selectedEpisode.overview) {
+                <p class="ep-modal-overview">{{ selectedEpisode.overview }}</p>
+              }
+              @if (selectedEpisode.guest_stars?.length) {
+                <div class="ep-modal-section">
+                  <h4 class="ep-modal-section-title">Guest Stars</h4>
+                  <p class="ep-modal-guest-stars">{{ guestStarsText }}</p>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
       }
     </ion-content>
   </div>

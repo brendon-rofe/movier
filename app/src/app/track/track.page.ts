@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
-import { MovieService, MovieDetails, TvDetails, SeasonDetails, TvEpisode } from '../services/movie.service';
+import { MovieService, MovieDetails, TvDetails, SeasonDetails, TvEpisode, EpisodeDetails } from '../services/movie.service';
 import { TrackingService, MovieWatchStatus } from '../services/tracking.service';
 
 @Component({
@@ -17,6 +17,9 @@ export class TrackPage implements OnInit {
   seasons: SeasonDetails[] = [];
   selectedSeason = 1;
   loading = false;
+
+  selectedEpisode: EpisodeDetails | null = null;
+  episodeLoading = false;
 
   statusOptions: { value: MovieWatchStatus; label: string; icon: string }[] = [
     { value: 'want_to_watch', label: 'Want to Watch', icon: 'bookmark' },
@@ -99,6 +102,19 @@ export class TrackPage implements OnInit {
     this.tracking.toggleEpisode(this.tvShow.id, episode.season_number, episode.episode_number);
   }
 
+  openEpisodeDetail(episode: TvEpisode) {
+    if (!this.tvShow) return;
+    this.episodeLoading = true;
+    this.movieService.getEpisodeDetails(this.tvShow.id, episode.season_number, episode.episode_number).subscribe((data) => {
+      this.selectedEpisode = data;
+      this.episodeLoading = false;
+    });
+  }
+
+  closeEpisodeDetail() {
+    this.selectedEpisode = null;
+  }
+
   toggleSeason(seasonNum: number) {
     if (!this.tvShow) return;
     const seasonInfo = this.tvShow.seasons.find(s => s.season_number === seasonNum);
@@ -117,7 +133,12 @@ export class TrackPage implements OnInit {
     window.history.back();
   }
 
-  getImageUrl(path: string | null): string {
-    return this.movieService.getImageUrl(path, 'w342');
+  get guestStarsText(): string {
+    if (!this.selectedEpisode?.guest_stars?.length) return '';
+    return this.selectedEpisode.guest_stars.slice(0, 3).map((g) => g.name).join(', ');
+  }
+
+  getImageUrl(path: string | null, size: string = 'w342'): string {
+    return this.movieService.getImageUrl(path, size);
   }
 }

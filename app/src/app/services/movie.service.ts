@@ -100,6 +100,21 @@ export interface TvEpisode {
   vote_average: number;
 }
 
+export interface EpisodeDetails {
+  id: number;
+  episode_number: number;
+  season_number: number;
+  name: string;
+  overview: string;
+  still_path: string | null;
+  air_date: string;
+  vote_average: number;
+  runtime: number;
+  vote_count: number;
+  crew: { job: string; name: string }[];
+  guest_stars: { name: string; character: string; profile_path: string | null }[];
+}
+
 export interface SeasonDetails {
   id: number;
   season_number: number;
@@ -158,6 +173,12 @@ export class MovieService {
 
   getSeasonDetails(tvId: number, seasonNumber: number): Observable<SeasonDetails> {
     return this.http.get<SeasonDetails>(`${this.baseUrl}/tv/${tvId}/season/${seasonNumber}`, {
+      params: { api_key: this.apiKey },
+    });
+  }
+
+  getEpisodeDetails(tvId: number, seasonNumber: number, episodeNumber: number): Observable<EpisodeDetails> {
+    return this.http.get<EpisodeDetails>(`${this.baseUrl}/tv/${tvId}/season/${seasonNumber}/episode/${episodeNumber}`, {
       params: { api_key: this.apiKey },
     });
   }
