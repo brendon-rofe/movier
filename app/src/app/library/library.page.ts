@@ -4,6 +4,7 @@ import { IonContent } from '@ionic/angular/standalone';
 import { AsyncPipe } from '@angular/common';
 import { LibraryService } from '../services/library.service';
 import { MovieService, Movie } from '../services/movie.service';
+import { TrackingService } from '../services/tracking.service';
 
 @Component({
   selector: 'app-library',
@@ -12,15 +13,27 @@ import { MovieService, Movie } from '../services/movie.service';
   imports: [IonContent, RouterLink, AsyncPipe],
 })
 export class LibraryPage {
-  profileImage = 'https://lh3.googleusercontent.com/aida-public/AB6AXuDrTkgyMaeChRKiU67Fi9BPdrK9AycjjEzVRdLraTnQ0P9qEpcXeeMyFUJGsQtKEPgzkkrcE0CdnlA3G_1usIUNHd-I9srVquhMw-EDqhV_IURg5XpaeyUgiGsDNS2XDGiAmnyWIlZ3-EYPUTQlmRAhBNnpO9r2binK9mTcrwoBn2NLDydNudnRga1rgdEf1SuLSj-WMsESOU5YqH0c4y1vjujBmkBd9eYJLbhITnk68jLH_Rxq6EJ9Q2bG2CYCdwtORMYnyWJGg_E';
-
+  view: 'watchlist' | 'seen' = 'watchlist';
   libraryMovies = this.libraryService.library$;
 
   constructor(
     public libraryService: LibraryService,
     private movieService: MovieService,
     private router: Router,
+    public tracking: TrackingService,
   ) {}
+
+  get filteredMovies(): Movie[] {
+    return this.libraryService.library.value.filter((m) => {
+      if (m.media_type === 'tv') {
+        const isFullyWatched = this.tracking.isTvFullyWatched(m.id);
+        return this.view === 'seen' ? isFullyWatched : !isFullyWatched;
+      }
+      const data = this.tracking.getMovieData(m.id);
+      const isWatched = data?.status === 'watched';
+      return this.view === 'seen' ? isWatched : !isWatched;
+    });
+  }
 
   getImageUrl(path: string | null): string {
     return this.movieService.getImageUrl(path, 'w500');

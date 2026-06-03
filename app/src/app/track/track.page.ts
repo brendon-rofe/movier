@@ -55,6 +55,7 @@ export class TrackPage implements OnInit {
     } else {
       this.movieService.getTvDetails(id).subscribe((data) => {
         this.tvShow = data;
+        this.tracking.setTvTotalEpisodes(id, data.number_of_episodes);
         this.selectedSeason = 1;
         this.loadSeason(1);
       });

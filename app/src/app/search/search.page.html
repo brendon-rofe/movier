@@ -6,8 +6,8 @@
       <h1 class="header-title">CineTrack</h1>
     </div>
     <div class="header-right">
-      <div class="avatar">
-        <img [src]="profileImage" alt="Profile" />
+      <div class="avatar" routerLink="/settings">
+        <span class="material-symbols-outlined avatar-icon">person</span>
       </div>
     </div>
   </div>
@@ -111,9 +111,5 @@
   <div class="nav-item" routerLink="/library">
     <span class="material-symbols-outlined nav-icon">subscriptions</span>
     <span class="nav-label">Library</span>
-  </div>
-  <div class="nav-item" routerLink="/settings">
-    <span class="material-symbols-outlined nav-icon">settings</span>
-    <span class="nav-label">Settings</span>
   </div>
 </nav>

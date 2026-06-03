@@ -15,6 +15,7 @@ export interface EpisodeCheck {
 
 export interface TvTrackData {
   episodes: EpisodeCheck[];
+  totalEpisodes?: number;
 }
 
 interface TrackStore {
@@ -88,6 +89,26 @@ export class TrackingService {
     const data = this.getTvData(tvId);
     if (!data) return 0;
     return data.episodes.filter((e) => e.season === season && e.watched).length;
+  }
+
+  setTvTotalEpisodes(tvId: number, total: number) {
+    const current = { ...this.store.value };
+    const key = this.key(tvId, 'tv');
+    let data = current[key] as TvTrackData | undefined;
+    if (!data) {
+      data = { episodes: [] };
+    }
+    data.totalEpisodes = total;
+    current[key] = data;
+    this.store.next(current);
+    this.save();
+  }
+
+  isTvFullyWatched(tvId: number): boolean {
+    const data = this.getTvData(tvId);
+    if (!data || !data.totalEpisodes) return false;
+    const watchedCount = data.episodes.filter((e) => e.watched).length;
+    return watchedCount >= data.totalEpisodes;
   }
 
   isSeasonFullyWatched(tvId: number, season: number, totalEpisodes: number): boolean {

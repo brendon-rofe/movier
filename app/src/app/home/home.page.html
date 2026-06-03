@@ -7,8 +7,8 @@
     </div>
     <div class="header-right">
       <span class="material-symbols-outlined header-btn" routerLink="/search">search</span>
-      <div class="avatar">
-        <img [src]="profileImage" alt="Profile" />
+      <div class="avatar" routerLink="/settings">
+        <span class="material-symbols-outlined avatar-icon">person</span>
       </div>
     </div>
   </div>
@@ -76,12 +76,12 @@
   @if (view === 'movies') {
     <section class="section section-last">
       <div class="section-header">
-        <h3 class="section-title">Currently Watching Movies</h3>
+        <h3 class="section-title">Movies You Want to Watch</h3>
       </div>
 
       @if (watchingMovies.length === 0) {
         <div class="empty-state">
-          <p class="empty-text">No movies being watched yet. Add some from search!</p>
+          <p class="empty-text">No movies saved yet. Add some from search!</p>
           <button class="empty-btn" routerLink="/search">
             <span class="material-symbols-outlined">search</span>
             Browse Movies
@@ -132,9 +132,5 @@
   <div class="nav-item" routerLink="/library">
     <span class="material-symbols-outlined nav-icon">subscriptions</span>
     <span class="nav-label">Library</span>
-  </div>
-  <div class="nav-item" routerLink="/settings">
-    <span class="material-symbols-outlined nav-icon">settings</span>
-    <span class="nav-label">Settings</span>
   </div>
 </nav>
