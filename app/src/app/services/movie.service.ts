@@ -12,6 +12,7 @@ export interface Movie {
   vote_average: number;
   release_date: string;
   genre_ids: number[];
+  media_type?: 'movie' | 'tv';
 }
 
 export interface TvShow {
@@ -62,6 +63,49 @@ export interface TvDetails {
   homepage: string | null;
   number_of_seasons: number;
   number_of_episodes: number;
+  seasons: TvSeason[];
+}
+
+export interface SearchResultItem {
+  id: number;
+  media_type: 'movie' | 'tv';
+  title?: string;
+  name?: string;
+  overview: string;
+  poster_path: string | null;
+  backdrop_path: string | null;
+  vote_average: number;
+  release_date?: string;
+  first_air_date?: string;
+  genre_ids?: number[];
+}
+
+export interface TvSeason {
+  id: number;
+  season_number: number;
+  name: string;
+  episode_count: number;
+  overview: string;
+  poster_path: string | null;
+}
+
+export interface TvEpisode {
+  id: number;
+  episode_number: number;
+  season_number: number;
+  name: string;
+  overview: string;
+  still_path: string | null;
+  air_date: string;
+  vote_average: number;
+}
+
+export interface SeasonDetails {
+  id: number;
+  season_number: number;
+  episodes: TvEpisode[];
+  name: string;
+  overview: string;
 }
 
 interface TMDBMovieResponse {
@@ -70,6 +114,10 @@ interface TMDBMovieResponse {
 
 interface TMDBTvResponse {
   results: TvShow[];
+}
+
+interface TMDBMultiSearchResponse {
+  results: SearchResultItem[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -106,6 +154,20 @@ export class MovieService {
     return this.http.get<TvDetails>(`${this.baseUrl}/tv/${id}`, {
       params: { api_key: this.apiKey },
     });
+  }
+
+  getSeasonDetails(tvId: number, seasonNumber: number): Observable<SeasonDetails> {
+    return this.http.get<SeasonDetails>(`${this.baseUrl}/tv/${tvId}/season/${seasonNumber}`, {
+      params: { api_key: this.apiKey },
+    });
+  }
+
+  searchMulti(query: string, page: number = 1): Observable<SearchResultItem[]> {
+    return this.http
+      .get<TMDBMultiSearchResponse>(`${this.baseUrl}/search/multi`, {
+        params: { api_key: this.apiKey, query, page: page.toString() },
+      })
+      .pipe(map((res) => res.results.filter((r) => r.media_type === 'movie' || r.media_type === 'tv')));
   }
 
   getImageUrl(path: string | null, size: string = 'w500'): string {

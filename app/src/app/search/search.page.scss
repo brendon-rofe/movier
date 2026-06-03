@@ -311,6 +311,48 @@ ion-content.main-content {
   font-family: 'Inter', sans-serif;
 }
 
+.result-rating {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.star-icon {
+  font-size: 14px;
+  color: #f5c518;
+}
+
+/* ===== Loading ===== */
+.loading-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+}
+
+.loading-icon {
+  font-size: 48px;
+  color: var(--secondary);
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--on-surface-variant);
+  margin: 0;
+}
+
 /* ===== Empty State ===== */
 .empty-section {
   display: flex;

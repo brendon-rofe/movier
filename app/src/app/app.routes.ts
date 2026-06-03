@@ -22,6 +22,10 @@ export const routes: Routes = [
     loadComponent: () => import('./detail/detail.page').then((m) => m.DetailPage),
   },
   {
+    path: 'track/:type/:id',
+    loadComponent: () => import('./track/track.page').then((m) => m.TrackPage),
+  },
+  {
     path: '',
     redirectTo: 'home',
     pathMatch: 'full',

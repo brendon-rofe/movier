@@ -1,0 +1,124 @@
+@if (type === 'movie' && movie) {
+  <div class="page-wrap">
+    <div class="bg-section">
+      <img [src]="getImageUrl(movie.backdrop_path)" alt="" class="bg-img" />
+      <div class="bg-overlay"></div>
+    </div>
+    <button class="back-btn" (click)="goBack()">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+
+    <ion-content class="content">
+      <div class="header-row">
+        <img [src]="getImageUrl(movie.poster_path)" [alt]="movie.title" class="thumb" />
+        <div>
+          <h1 class="title">{{ movie.title }}</h1>
+          <p class="year">{{ movie.release_date.substring(0, 4) }} &middot; {{ movie.runtime }} min</p>
+        </div>
+      </div>
+
+      <p class="label">Status</p>
+      <div class="status-grid">
+        @for (opt of statusOptions; track opt.value) {
+          <button
+            class="status-btn"
+            [class.active]="getCurrentStatus() === opt.value"
+            (click)="setStatus(opt.value)"
+          >
+            <span class="material-symbols-outlined status-icon">{{ opt.icon }}</span>
+            {{ opt.label }}
+          </button>
+        }
+      </div>
+    </ion-content>
+  </div>
+}
+
+@if (type === 'tv' && tvShow) {
+  <div class="page-wrap">
+    <div class="bg-section">
+      <img [src]="getImageUrl(tvShow.backdrop_path)" alt="" class="bg-img" />
+      <div class="bg-overlay"></div>
+    </div>
+    <button class="back-btn" (click)="goBack()">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+
+    <ion-content class="content">
+      <div class="header-row">
+        <img [src]="getImageUrl(tvShow.poster_path)" [alt]="tvShow.name" class="thumb" />
+        <div>
+          <h1 class="title">{{ tvShow.name }}</h1>
+          <p class="year">{{ tvShow.first_air_date.substring(0, 4) }} &middot; {{ tvShow.number_of_seasons }} seasons</p>
+        </div>
+      </div>
+
+      <p class="label">Season</p>
+      <div class="season-row">
+        @for (s of seasonsNav; track s) {
+          <div class="season-chip-wrap">
+            <button
+              class="season-chip"
+              [class.active]="selectedSeason === s"
+              (click)="selectSeason(s)"
+            >
+              {{ s }}
+            </button>
+            <div
+              class="season-check"
+              [class.checked]="isSeasonChecked(s)"
+              (click)="toggleSeason(s)"
+            >
+              @if (isSeasonChecked(s)) {
+                <span class="material-symbols-outlined">check_circle</span>
+              } @else {
+                <span class="material-symbols-outlined">radio_button_unchecked</span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      @if (loading) {
+        <p class="loading-text">Loading episodes...</p>
+      }
+
+      @if (!loading) {
+        @if (currentSeason) {
+          <div class="episode-list">
+            @for (ep of currentSeason.episodes; track ep.id) {
+              <label class="ep-row">
+                <div class="ep-left">
+                  <span class="ep-num">{{ ep.episode_number }}</span>
+                  <div>
+                    <span class="ep-name">{{ ep.name }}</span>
+                    @if (ep.overview) {
+                      <p class="ep-overview">{{ ep.overview }}</p>
+                    }
+                  </div>
+                </div>
+                <div
+                  class="ep-check"
+                  [class.checked]="tracking.isEpisodeWatched(tvShow.id, ep.season_number, ep.episode_number)"
+                  (click)="toggleEpisode(ep)"
+                >
+                  @if (tracking.isEpisodeWatched(tvShow.id, ep.season_number, ep.episode_number)) {
+                    <span class="material-symbols-outlined check-icon">check_circle</span>
+                  } @else {
+                    <span class="material-symbols-outlined check-icon">radio_button_unchecked</span>
+                  }
+                </div>
+              </label>
+            }
+          </div>
+        }
+      }
+    </ion-content>
+  </div>
+}
+
+@if (!movie && !tvShow) {
+  <ion-content class="content">
+    <div class="loading">Loading...</div>
+  </ion-content>
+}

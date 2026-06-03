@@ -21,38 +21,50 @@
       <input
         class="search-input"
         type="text"
-        placeholder="Search movies, series, genres..."
-        [(ngModel)]="query"
+        placeholder="Search movies, series..."
+        [ngModel]="query"
+        (ngModelChange)="onQueryChange($event)"
       />
       @if (query) {
-        <button class="clear-btn" (click)="query = ''">
+        <button class="clear-btn" (click)="clearQuery()">
           <span class="material-symbols-outlined">close</span>
         </button>
       }
     </div>
   </section>
 
+  <!-- Loading -->
+  @if (loading) {
+    <section class="loading-section">
+      <span class="material-symbols-outlined loading-icon">progress_activity</span>
+      <p class="loading-text">Searching...</p>
+    </section>
+  }
+
   <!-- Results -->
-  @if (query && results.length > 0) {
+  @if (!loading && query && results.length > 0) {
     <section class="results-section">
       <p class="results-count">{{ results.length }} result{{ results.length === 1 ? '' : 's' }} found</p>
       <div class="results-grid">
-        @for (item of results; track item.title) {
-          <div class="result-card">
+        @for (item of results; track item.id) {
+          <div class="result-card" (click)="openDetail(item)" style="cursor: pointer;">
             <div class="result-img-wrap">
-              <img [src]="item.image" alt="" loading="lazy" />
+              <img [src]="getImageUrl(item.poster_path)" alt="" loading="lazy" />
               <div class="result-type-badge">
                 <span class="material-symbols-outlined result-type-icon">
-                  {{ item.type === 'movie' ? 'movie' : 'tv' }}
+                  {{ item.media_type === 'movie' ? 'movie' : 'tv' }}
                 </span>
-                <span class="result-type-label">{{ item.type === 'movie' ? 'Movie' : 'Series' }}</span>
+                <span class="result-type-label">{{ item.media_type === 'movie' ? 'Movie' : 'Series' }}</span>
               </div>
             </div>
             <div class="result-body">
-              <h3 class="result-title">{{ item.title }}</h3>
+              <h3 class="result-title">{{ getDisplayTitle(item) }}</h3>
               <div class="result-footer">
-                <span class="result-subtitle">{{ item.subtitle }}</span>
-                <span class="result-year">{{ item.year }}</span>
+                <span class="result-year">{{ getDisplayYear(item) }}</span>
+                <span class="result-rating">
+                  <span class="material-symbols-outlined star-icon">star</span>
+                  {{ item.vote_average.toFixed(1) }}
+                </span>
               </div>
             </div>
           </div>
@@ -62,7 +74,7 @@
   }
 
   <!-- Empty state -->
-  @if (query && results.length === 0) {
+  @if (!loading && query && results.length === 0) {
     <section class="empty-section">
       <span class="material-symbols-outlined empty-icon">search_off</span>
       <h3 class="empty-title">No Results Found</h3>
@@ -77,10 +89,10 @@
       <h3 class="default-title">Discover Something New</h3>
       <p class="default-desc">Type above to search through movies, TV series, and more.</p>
       <div class="suggestions">
-        <span class="suggestion-tag" (click)="query = 'Interstellar'">Interstellar</span>
-        <span class="suggestion-tag" (click)="query = 'Horizons'">Horizons</span>
-        <span class="suggestion-tag" (click)="query = 'Night'">Night</span>
-        <span class="suggestion-tag" (click)="query = 'Dreams'">Dreams</span>
+        <span class="suggestion-tag" (click)="onQueryChange('Interstellar'); query = 'Interstellar'">Interstellar</span>
+        <span class="suggestion-tag" (click)="onQueryChange('Inception'); query = 'Inception'">Inception</span>
+        <span class="suggestion-tag" (click)="onQueryChange('Breaking Bad'); query = 'Breaking Bad'">Breaking Bad</span>
+        <span class="suggestion-tag" (click)="onQueryChange('Stranger Things'); query = 'Stranger Things'">Stranger Things</span>
       </div>
     </section>
   }
@@ -100,7 +112,7 @@
     <span class="material-symbols-outlined nav-icon">subscriptions</span>
     <span class="nav-label">Library</span>
   </div>
-  <div class="nav-item">
+  <div class="nav-item" routerLink="/settings">
     <span class="material-symbols-outlined nav-icon">settings</span>
     <span class="nav-label">Settings</span>
   </div>

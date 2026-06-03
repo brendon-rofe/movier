@@ -56,6 +56,7 @@ export class HomePage implements OnInit {
       vote_average: show.vote_average,
       release_date: show.first_air_date,
       genre_ids: show.genre_ids,
+      media_type: 'tv',
     };
     if (this.libraryService.isInLibrary(movie.id)) {
       this.libraryService.removeMovie(movie.id);

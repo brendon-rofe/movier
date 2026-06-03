@@ -17,7 +17,6 @@
 <ion-content class="main-content">
   <section class="library-hero">
     <h2 class="page-title">My Library</h2>
-    <p class="page-desc">Movies you've saved to your library.</p>
   </section>
 
   <section class="grid-section">
@@ -33,7 +32,7 @@
         <div class="content-grid">
           @for (movie of movies; track movie.id) {
             <div class="library-card">
-              <div class="card-img-wrap">
+              <div class="card-img-wrap" (click)="openTracking(movie)" style="cursor: pointer;">
                 <img [src]="getImageUrl(movie.poster_path)" [alt]="movie.title" />
                 <div class="movie-rating">
                   <span class="material-symbols-outlined rating-icon">star</span>

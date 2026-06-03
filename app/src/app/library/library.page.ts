@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
 import { AsyncPipe } from '@angular/common';
 import { LibraryService } from '../services/library.service';
@@ -19,10 +19,16 @@ export class LibraryPage {
   constructor(
     public libraryService: LibraryService,
     private movieService: MovieService,
+    private router: Router,
   ) {}
 
   getImageUrl(path: string | null): string {
     return this.movieService.getImageUrl(path, 'w500');
+  }
+
+  openTracking(movie: Movie) {
+    const type = movie.media_type || 'movie';
+    this.router.navigate(['/track', type, movie.id]);
   }
 
   removeFromLibrary(movie: Movie) {

@@ -120,6 +120,7 @@ export class DetailPage implements OnInit {
       vote_average: voteAverage,
       release_date: releaseDate,
       genre_ids: genreIds,
+      media_type: this.type,
     };
 
     if (this.libraryService.isInLibrary(movie.id)) {
