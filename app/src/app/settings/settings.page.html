@@ -6,12 +6,20 @@
       <h1 class="header-title">CineTrack</h1>
     </div>
     <div class="header-right">
+      <div class="notification-trigger" (click)="toggleNotifications()">
+        <span class="material-symbols-outlined bell-icon">notifications</span>
+        @if (unreadCount > 0) {
+          <span class="bell-badge">{{ unreadCount }}</span>
+        }
+      </div>
       <div class="avatar">
         <span class="material-symbols-outlined avatar-icon">person</span>
       </div>
     </div>
   </div>
 </header>
+
+<app-notification-dropdown [isOpen]="notifOpen" (close)="closeNotifications()" />
 
 <ion-content class="main-content">
   <section class="settings-section">
@@ -24,7 +32,142 @@
         </div>
       </div>
     }
-    <h2 class="page-title">Settings</h2>
+
+    <!-- Linked Users -->
+    @if (acceptedLinks.length > 0) {
+      <div class="setting-group">
+        <h3 class="group-title">Linked Users</h3>
+        <div class="group-card">
+          @for (link of acceptedLinks; track link.id) {
+            <div class="setting-item">
+              <div class="setting-left">
+                <span class="material-symbols-outlined setting-icon">link</span>
+              </div>
+              <div class="setting-middle">
+                <span class="setting-label">{{ getPartner(link) }}</span>
+                <span class="setting-desc">Linked</span>
+              </div>
+              <div class="setting-right">
+                <button class="unlink-btn" (click)="unlink(link.id)">
+                  <span class="material-symbols-outlined">link_off</span>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Pending Invites Received -->
+    @if (pendingReceived.length > 0) {
+      <div class="setting-group">
+        <h3 class="group-title">Pending Invites</h3>
+        <div class="group-card">
+          @for (link of pendingReceived; track link.id) {
+            <div class="setting-item">
+              <div class="setting-left">
+                <span class="material-symbols-outlined setting-icon" style="color: var(--primary);">person_add</span>
+              </div>
+              <div class="setting-middle">
+                <span class="setting-label">{{ link.requester?.username }}</span>
+                <span class="setting-desc">Wants to link with you</span>
+              </div>
+              <div class="setting-right" style="gap: 8px;">
+                <button class="invite-btn invite-btn-accept" (click)="acceptInvite(link.id)">Accept</button>
+                <button class="invite-btn invite-btn-reject" (click)="rejectInvite(link.id)">Reject</button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Pending Invites Sent -->
+    @if (pendingSent.length > 0) {
+      <div class="setting-group">
+        <h3 class="group-title">Sent Invites</h3>
+        <div class="group-card">
+          @for (link of pendingSent; track link.id) {
+            <div class="setting-item">
+              <div class="setting-left">
+                <span class="material-symbols-outlined setting-icon" style="color: var(--on-surface-variant);">schedule</span>
+              </div>
+              <div class="setting-middle">
+                <span class="setting-label">{{ link.receiver?.username }}</span>
+                <span class="setting-desc">Invite pending</span>
+              </div>
+              <div class="setting-right">
+                <button class="unlink-btn" (click)="unlink(link.id)">
+                  <span class="material-symbols-outlined">close</span>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Send Invite -->
+    <div class="setting-group">
+      <h3 class="group-title">Link with User</h3>
+      <div class="invite-card">
+        @if (!showInviteForm) {
+          <button class="invite-trigger" (click)="showInviteForm = true">
+            <span class="material-symbols-outlined">person_add</span>
+            Send Invite
+          </button>
+        } @else {
+          <div class="invite-form">
+            @if (inviteError) {
+              <div class="invite-error">{{ inviteError }}</div>
+            }
+            @if (inviteSuccess) {
+              <div class="invite-success">{{ inviteSuccess }}</div>
+            }
+            <div class="invite-input-row">
+              <input
+                class="invite-input"
+                type="text"
+                placeholder="Enter username"
+                [(ngModel)]="inviteUsername"
+                (keydown.enter)="sendInvite()"
+              />
+              <button class="invite-send-btn" (click)="sendInvite()">Send</button>
+              <button class="invite-cancel-btn" (click)="showInviteForm = false; inviteError = ''; inviteSuccess = ''">
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Shared Watches -->
+    @if (sharedWatches.length > 0) {
+      <div class="setting-group">
+        <h3 class="group-title">Shared Watches</h3>
+        <div class="group-card">
+          @for (watch of sharedWatches; track watch.id) {
+            <div class="setting-item">
+              <div class="setting-left">
+                <span class="material-symbols-outlined setting-icon" style="color: var(--secondary);">visibility</span>
+              </div>
+              <div class="setting-middle">
+                <span class="setting-label">{{ watch.title }}</span>
+                <span class="setting-desc">Watching with {{ getWatchPartner(watch) }}</span>
+              </div>
+              <div class="setting-right">
+                <button class="unlink-btn" (click)="removeSharedWatch(watch.id)">
+                  <span class="material-symbols-outlined">link_off</span>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <h2 class="page-title" style="margin-top: 32px;">Settings</h2>
 
     @for (section of settingSections; track section.title; let si = $index) {
       <div class="setting-group">

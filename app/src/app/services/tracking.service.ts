@@ -35,6 +35,7 @@ export class TrackingService {
   private store = new BehaviorSubject<TrackStore>(this.load());
   store$: Observable<TrackStore> = this.store.asObservable();
   private tvCache = new Map<number, TvTrackData>();
+  private movieCache = new Map<number, MovieTrackData>();
 
   constructor(private http: HttpClient) {}
 
@@ -72,16 +73,34 @@ export class TrackingService {
     await this.fetchTvData(tvId);
   }
 
-  getMovieData(id: number): MovieTrackData | null {
-    const data = this.store.value[this.key(id, 'movie')];
-    return data && 'status' in data ? (data as MovieTrackData) : null;
+  async loadMovieData(movieId: number) {
+    try {
+      const data = await firstValueFrom(this.http.get<{ status: string | null }>(`${this.api}/tracking/movie/${movieId}`));
+      if (data.status) {
+        this.movieCache.set(movieId, { status: data.status as MovieWatchStatus });
+      } else {
+        this.movieCache.set(movieId, { status: 'want_to_watch' });
+      }
+    } catch {
+      this.movieCache.set(movieId, { status: 'want_to_watch' });
+    }
   }
 
-  setMovieStatus(id: number, status: MovieWatchStatus) {
-    const current = this.store.value;
-    current[this.key(id, 'movie')] = { status };
-    this.store.next({ ...current });
-    this.save();
+  getMovieData(id: number): MovieTrackData | null {
+    return this.movieCache.get(id) ?? null;
+  }
+
+  async setMovieStatus(id: number, status: MovieWatchStatus) {
+    this.movieCache.set(id, { status });
+    try {
+      await firstValueFrom(this.http.put(`${this.api}/tracking/movie/${id}/status`, { status }));
+    } catch {
+      // fallback to localStorage
+      const current = this.store.value;
+      current[this.key(id, 'movie')] = { status };
+      this.store.next({ ...current });
+      this.save();
+    }
   }
 
   getTvData(id: number): TvTrackData | null {

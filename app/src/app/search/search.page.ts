@@ -4,27 +4,34 @@ import { Router, RouterLink } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, Subscription } from 'rxjs';
 import { MovieService, SearchResultItem } from '../services/movie.service';
+import { NotificationService } from '../services/notification.service';
+import { NotificationDropdown } from '../components/notification-dropdown/notification-dropdown';
 
 @Component({
   selector: 'app-search',
   templateUrl: 'search.page.html',
   styleUrls: ['search.page.scss'],
-  imports: [IonContent, RouterLink, FormsModule],
+  imports: [IonContent, RouterLink, FormsModule, NotificationDropdown],
 })
 export class SearchPage implements OnInit, OnDestroy {
   query = '';
   results: SearchResultItem[] = [];
   loading = false;
+  notifOpen = false;
+  unreadCount = 0;
 
   private searchSubject = new Subject<string>();
   private sub: Subscription | null = null;
+  private notifSub?: Subscription;
 
   constructor(
     private movieService: MovieService,
     private router: Router,
+    private notifService: NotificationService,
   ) {}
 
   ngOnInit() {
+    this.notifSub = this.notifService.unreadCount$.subscribe((c) => this.unreadCount = c);
     this.sub = this.searchSubject.pipe(
       debounceTime(400),
       distinctUntilChanged(),
@@ -45,6 +52,15 @@ export class SearchPage implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.sub?.unsubscribe();
+    this.notifSub?.unsubscribe();
+  }
+
+  toggleNotifications() {
+    this.notifOpen = !this.notifOpen;
+  }
+
+  closeNotifications() {
+    this.notifOpen = false;
   }
 
   onQueryChange(value: string) {

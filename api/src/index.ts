@@ -5,6 +5,9 @@ import tmdbRoutes from './routes/tmdb.js';
 import authRoutes from './routes/auth.js';
 import libraryRoutes from './routes/library.js';
 import trackingRoutes from './routes/tracking.js';
+import linkRoutes from './routes/links.js';
+import notificationRoutes from './routes/notifications.js';
+import sharedWatchRoutes from './routes/shared-watches.js';
 
 const app = express();
 const port = process.env.PORT || 3100;
@@ -27,6 +30,9 @@ app.use('/api', tmdbRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/library', libraryRoutes);
 app.use('/api/tracking', trackingRoutes);
+app.use('/api/links', linkRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/shared-watches', sharedWatchRoutes);
 
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error(err);

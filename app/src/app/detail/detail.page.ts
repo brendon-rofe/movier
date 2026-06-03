@@ -1,27 +1,35 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
+import { FormsModule } from '@angular/forms';
 import { MovieService, MovieDetails, TvDetails, Movie, Genre } from '../services/movie.service';
 import { LibraryService } from '../services/library.service';
+import { SharedWatchService } from '../services/shared-watch.service';
+import { LinkService, UserLink } from '../services/link.service';
 
 @Component({
   selector: 'app-detail',
   templateUrl: 'detail.page.html',
   styleUrls: ['detail.page.scss'],
-  imports: [IonContent],
+  imports: [IonContent, FormsModule],
 })
 export class DetailPage implements OnInit {
   movie: MovieDetails | null = null;
   tvShow: TvDetails | null = null;
   type: 'movie' | 'tv' = 'movie';
+  showWatchInvite = false;
+  linkedUsers: UserLink[] = [];
+  watchInviteMsg = '';
 
   constructor(
     private route: ActivatedRoute,
     private movieService: MovieService,
     public libraryService: LibraryService,
+    private sharedWatchService: SharedWatchService,
+    private linkService: LinkService,
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     this.type = (this.route.snapshot.paramMap.get('type') as 'movie' | 'tv') || 'movie';
     const id = Number(this.route.snapshot.paramMap.get('id'));
 
@@ -34,6 +42,11 @@ export class DetailPage implements OnInit {
         this.tvShow = data;
       });
     }
+
+    await this.linkService.loadLinks();
+    this.linkService.links$.subscribe((links) => {
+      this.linkedUsers = [...links.sent, ...links.received].filter((l) => l.status === 'accepted');
+    });
   }
 
   getTitle(): string {
@@ -99,7 +112,13 @@ export class DetailPage implements OnInit {
     return this.movieService.getImageUrl(path, size);
   }
 
-  toggleLibrary() {
+  getPartner(link: UserLink): string {
+    if (link.requester && link.requester.username) return link.requester.username;
+    if (link.receiver && link.receiver.username) return link.receiver.username;
+    return '';
+  }
+
+  async toggleLibrary() {
     const id = this.type === 'movie' ? this.movie?.id : this.tvShow?.id;
     const title = this.getTitle();
     const overview = this.getOverview();
@@ -125,9 +144,28 @@ export class DetailPage implements OnInit {
 
     if (this.libraryService.isInLibrary(movie.id)) {
       this.libraryService.removeMovie(movie.id);
+      this.showWatchInvite = false;
     } else {
-      this.libraryService.addMovie(movie);
+      await this.libraryService.addMovie(movie);
+      if (this.linkedUsers.length > 0) {
+        this.showWatchInvite = true;
+      }
     }
+  }
+
+  async sendWatchInvite(link: UserLink) {
+    const partner = link.requester && link.requester.username ? link.requester.username : link.receiver?.username || '';
+    try {
+      await this.sharedWatchService.invite(partner, this.getCurrentId(), this.type, this.getTitle());
+      this.watchInviteMsg = `Invite sent to ${partner}!`;
+    } catch (e: any) {
+      this.watchInviteMsg = e.error?.error || 'Failed to send invite';
+    }
+  }
+
+  dismissWatchInvite() {
+    this.showWatchInvite = false;
+    this.watchInviteMsg = '';
   }
 
   goBack() {

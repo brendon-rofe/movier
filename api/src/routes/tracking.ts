@@ -19,6 +19,89 @@ async function ensureTvTrack(userId: number, tmdbId: number) {
   return { item, track };
 }
 
+async function getSharedPartnerIds(userId: number, tmdbId: number, mediaType: string): Promise<number[]> {
+  const watches = await prisma.sharedWatch.findMany({
+    where: {
+      status: 'accepted',
+      tmdbId,
+      mediaType,
+      OR: [{ ownerId: userId }, { partnerId: userId }],
+    },
+  });
+  return watches.map((w) => (w.ownerId === userId ? w.partnerId : w.ownerId));
+}
+
+async function syncEpisodeToSharedPartners(userId: number, tmdbId: number, season: number, episode: number, watched: boolean) {
+  const partnerIds = await getSharedPartnerIds(userId, tmdbId, 'tv');
+  for (const pid of partnerIds) {
+    const track = await ensureTvTrack(pid, tmdbId);
+    if (!track) continue;
+
+    const existing = await prisma.tvEpisode.findUnique({
+      where: { tvTrackId_seasonNumber_episodeNumber: { tvTrackId: track.track.id, seasonNumber: season, episodeNumber: episode } },
+    });
+
+    if (existing) {
+      await prisma.tvEpisode.update({ where: { id: existing.id }, data: { watched } });
+    } else {
+      await prisma.tvEpisode.create({
+        data: { tvTrackId: track.track.id, seasonNumber: season, episodeNumber: episode, watched },
+      });
+    }
+  }
+}
+
+async function syncSeasonToSharedPartners(userId: number, tmdbId: number, season: number, totalEpisodes: number, watched: boolean) {
+  const partnerIds = await getSharedPartnerIds(userId, tmdbId, 'tv');
+  for (const pid of partnerIds) {
+    const track = await ensureTvTrack(pid, tmdbId);
+    if (!track) continue;
+
+    for (let ep = 1; ep <= totalEpisodes; ep++) {
+      const existing = await prisma.tvEpisode.findUnique({
+        where: { tvTrackId_seasonNumber_episodeNumber: { tvTrackId: track.track.id, seasonNumber: season, episodeNumber: ep } },
+      });
+
+      if (existing) {
+        await prisma.tvEpisode.update({ where: { id: existing.id }, data: { watched } });
+      } else {
+        await prisma.tvEpisode.create({
+          data: { tvTrackId: track.track.id, seasonNumber: season, episodeNumber: ep, watched },
+        });
+      }
+    }
+  }
+}
+
+async function syncTotalEpisodesToSharedPartners(userId: number, tmdbId: number, totalEpisodes: number) {
+  const partnerIds = await getSharedPartnerIds(userId, tmdbId, 'tv');
+  for (const pid of partnerIds) {
+    const track = await ensureTvTrack(pid, tmdbId);
+    if (!track) continue;
+    await prisma.tvTrack.update({
+      where: { id: track.track.id },
+      data: { totalEpisodes },
+    });
+  }
+}
+
+async function syncMovieToSharedPartners(userId: number, tmdbId: number, status: string) {
+  const partnerIds = await getSharedPartnerIds(userId, tmdbId, 'movie');
+  for (const pid of partnerIds) {
+    const item = await prisma.libraryItem.findUnique({
+      where: { userId_tmdbId_mediaType: { userId: pid, tmdbId, mediaType: 'movie' } },
+    });
+    if (!item) continue;
+    await prisma.movieTrack.upsert({
+      where: { libraryItemId: item.id },
+      create: { libraryItemId: item.id, status },
+      update: { status },
+    });
+  }
+}
+
+// --- TV endpoints ---
+
 router.get('/tv/:tmdbId/episodes', async (req: AuthRequest, res, next) => {
   try {
     const result = await ensureTvTrack(req.user!.userId, Number(req.params.tmdbId));
@@ -34,7 +117,8 @@ router.get('/tv/:tmdbId/episodes', async (req: AuthRequest, res, next) => {
 
 router.post('/tv/:tmdbId/episodes/toggle', async (req: AuthRequest, res, next) => {
   try {
-    const result = await ensureTvTrack(req.user!.userId, Number(req.params.tmdbId));
+    const tmdbId = Number(req.params.tmdbId);
+    const result = await ensureTvTrack(req.user!.userId, tmdbId);
     if (!result) return res.status(404).json({ error: 'TV show not in library' });
 
     const { season, episode } = req.body;
@@ -42,16 +126,18 @@ router.post('/tv/:tmdbId/episodes/toggle', async (req: AuthRequest, res, next) =
       where: { tvTrackId_seasonNumber_episodeNumber: { tvTrackId: result.track.id, seasonNumber: season, episodeNumber: episode } },
     });
 
+    let watched: boolean;
     if (existing) {
-      await prisma.tvEpisode.update({
-        where: { id: existing.id },
-        data: { watched: !existing.watched },
-      });
+      watched = !existing.watched;
+      await prisma.tvEpisode.update({ where: { id: existing.id }, data: { watched } });
     } else {
+      watched = true;
       await prisma.tvEpisode.create({
-        data: { tvTrackId: result.track.id, seasonNumber: season, episodeNumber: episode, watched: true },
+        data: { tvTrackId: result.track.id, seasonNumber: season, episodeNumber: episode, watched },
       });
     }
+
+    await syncEpisodeToSharedPartners(req.user!.userId, tmdbId, season, episode, watched);
 
     const episodes = await prisma.tvEpisode.findMany({ where: { tvTrackId: result.track.id } });
     res.json({
@@ -63,7 +149,8 @@ router.post('/tv/:tmdbId/episodes/toggle', async (req: AuthRequest, res, next) =
 
 router.post('/tv/:tmdbId/season/toggle', async (req: AuthRequest, res, next) => {
   try {
-    const result = await ensureTvTrack(req.user!.userId, Number(req.params.tmdbId));
+    const tmdbId = Number(req.params.tmdbId);
+    const result = await ensureTvTrack(req.user!.userId, tmdbId);
     if (!result) return res.status(404).json({ error: 'TV show not in library' });
 
     const { season, totalEpisodes } = req.body;
@@ -85,6 +172,8 @@ router.post('/tv/:tmdbId/season/toggle', async (req: AuthRequest, res, next) => 
       }
     }
 
+    await syncSeasonToSharedPartners(req.user!.userId, tmdbId, season, totalEpisodes, newWatched);
+
     const episodes = await prisma.tvEpisode.findMany({ where: { tvTrackId: result.track.id } });
     res.json({
       episodes: episodes.map((e) => ({ season: e.seasonNumber, episode: e.episodeNumber, watched: e.watched })),
@@ -95,7 +184,8 @@ router.post('/tv/:tmdbId/season/toggle', async (req: AuthRequest, res, next) => 
 
 router.put('/tv/:tmdbId/total-episodes', async (req: AuthRequest, res, next) => {
   try {
-    const result = await ensureTvTrack(req.user!.userId, Number(req.params.tmdbId));
+    const tmdbId = Number(req.params.tmdbId);
+    const result = await ensureTvTrack(req.user!.userId, tmdbId);
     if (!result) return res.status(404).json({ error: 'TV show not in library' });
 
     await prisma.tvTrack.update({
@@ -103,7 +193,48 @@ router.put('/tv/:tmdbId/total-episodes', async (req: AuthRequest, res, next) => 
       data: { totalEpisodes: req.body.totalEpisodes },
     });
 
+    await syncTotalEpisodesToSharedPartners(req.user!.userId, tmdbId, req.body.totalEpisodes);
+
     res.json({ ok: true });
+  } catch (e) { next(e); }
+});
+
+// --- Movie endpoints ---
+
+router.get('/movie/:tmdbId', async (req: AuthRequest, res, next) => {
+  try {
+    const item = await prisma.libraryItem.findUnique({
+      where: { userId_tmdbId_mediaType: { userId: req.user!.userId, tmdbId: Number(req.params.tmdbId), mediaType: 'movie' } },
+    });
+    if (!item) return res.json({ status: null });
+
+    const track = await prisma.movieTrack.findUnique({ where: { libraryItemId: item.id } });
+    res.json({ status: track?.status || null });
+  } catch (e) { next(e); }
+});
+
+router.put('/movie/:tmdbId/status', async (req: AuthRequest, res, next) => {
+  try {
+    const tmdbId = Number(req.params.tmdbId);
+    const { status } = req.body;
+    if (!['want_to_watch', 'watching', 'watched', 'dropped'].includes(status)) {
+      return res.status(400).json({ error: 'Invalid status' });
+    }
+
+    const item = await prisma.libraryItem.findUnique({
+      where: { userId_tmdbId_mediaType: { userId: req.user!.userId, tmdbId, mediaType: 'movie' } },
+    });
+    if (!item) return res.status(404).json({ error: 'Movie not in library' });
+
+    const track = await prisma.movieTrack.upsert({
+      where: { libraryItemId: item.id },
+      create: { libraryItemId: item.id, status },
+      update: { status },
+    });
+
+    await syncMovieToSharedPartners(req.user!.userId, tmdbId, status);
+
+    res.json({ status: track.status });
   } catch (e) { next(e); }
 });
 

@@ -1,36 +1,58 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
 import { AsyncPipe } from '@angular/common';
+import { Subscription } from 'rxjs';
 import { LibraryService } from '../services/library.service';
 import { MovieService, Movie } from '../services/movie.service';
 import { TrackingService } from '../services/tracking.service';
+import { NotificationService } from '../services/notification.service';
+import { NotificationDropdown } from '../components/notification-dropdown/notification-dropdown';
 
 @Component({
   selector: 'app-library',
   templateUrl: 'library.page.html',
   styleUrls: ['library.page.scss'],
-  imports: [IonContent, RouterLink, AsyncPipe],
+  imports: [IonContent, RouterLink, AsyncPipe, NotificationDropdown],
 })
-export class LibraryPage implements OnInit {
+export class LibraryPage implements OnInit, OnDestroy {
   view: 'watchlist' | 'seen' = 'watchlist';
   libraryMovies = this.libraryService.library$;
+  notifOpen = false;
+  unreadCount = 0;
+  private notifSub?: Subscription;
 
   constructor(
     public libraryService: LibraryService,
     private movieService: MovieService,
     private router: Router,
     public tracking: TrackingService,
+    private notifService: NotificationService,
   ) {}
 
   ngOnInit() {
+    this.notifSub = this.notifService.unreadCount$.subscribe((c) => this.unreadCount = c);
     this.libraryService.library$.subscribe((items) => {
       for (const item of items) {
         if (item.media_type === 'tv') {
           this.tracking.loadTvData(item.id);
+        } else {
+          this.tracking.loadMovieData(item.id);
         }
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.notifSub?.unsubscribe();
+  }
+
+  toggleNotifications() {
+    this.notifOpen = !this.notifOpen;
+  }
+
+  closeNotifications() {
+    this.notifOpen = false;
   }
 
   get filteredMovies(): Movie[] {

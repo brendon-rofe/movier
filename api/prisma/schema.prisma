@@ -14,8 +14,62 @@ model User {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   libraryItems LibraryItem[]
+  sentLinks        UserLink[] @relation("SentLinks")
+  receivedLinks    UserLink[] @relation("ReceivedLinks")
+  notifications    Notification[]
+  sentNotifications Notification[] @relation("FromUser")
+  ownedWatches     SharedWatch[] @relation("OwnedWatches")
+  partneredWatches SharedWatch[] @relation("PartneredWatches")
 
   @@map("users")
+}
+
+model UserLink {
+  id          Int      @id @default(autoincrement())
+  requesterId Int
+  requester   User     @relation("SentLinks", fields: [requesterId], references: [id], onDelete: Cascade)
+  receiverId  Int
+  receiver    User     @relation("ReceivedLinks", fields: [receiverId], references: [id], onDelete: Cascade)
+  status      String   @default("pending") // pending | accepted | rejected
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([requesterId, receiverId])
+  @@map("user_links")
+}
+
+model Notification {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type         String   // invite_received | invite_accepted | watch_invite | watch_accepted
+  fromUserId   Int
+  fromUser     User     @relation("FromUser", fields: [fromUserId], references: [id], onDelete: Cascade)
+  message      String
+  read         Boolean  @default(false)
+  linkId       Int?
+  sharedWatchId Int?
+  createdAt    DateTime @default(now())
+
+  @@map("notifications")
+}
+
+model SharedWatch {
+  id         Int      @id @default(autoincrement())
+  tmdbId     Int
+  mediaType  String   // "movie" | "tv"
+  title      String
+  ownerId    Int
+  partnerId  Int
+  status     String   @default("pending") // pending | accepted | declined
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  owner   User @relation("OwnedWatches", fields: [ownerId], references: [id], onDelete: Cascade)
+  partner User @relation("PartneredWatches", fields: [partnerId], references: [id], onDelete: Cascade)
+
+  @@unique([tmdbId, mediaType, ownerId, partnerId])
+  @@map("shared_watches")
 }
 
 model LibraryItem {

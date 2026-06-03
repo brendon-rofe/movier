@@ -6,6 +6,12 @@
       <h1 class="header-title">CineTrack</h1>
     </div>
     <div class="header-right">
+      <div class="notification-trigger" (click)="toggleNotifications()">
+        <span class="material-symbols-outlined bell-icon">notifications</span>
+        @if (unreadCount > 0) {
+          <span class="bell-badge">{{ unreadCount }}</span>
+        }
+      </div>
       <span class="material-symbols-outlined header-btn" routerLink="/search">search</span>
       <div class="avatar" routerLink="/settings">
         <span class="material-symbols-outlined avatar-icon">person</span>
@@ -13,6 +19,8 @@
     </div>
   </div>
 </header>
+
+<app-notification-dropdown [isOpen]="notifOpen" (close)="closeNotifications()" />
 
 <ion-content class="main-content">
   <div class="toggle-row">

@@ -249,3 +249,66 @@
   font-family: 'Inter', sans-serif;
   font-size: 16px;
 }
+
+.watch-invite-section {
+  margin-top: 16px;
+  padding: 16px;
+  background: rgba(23, 31, 51, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+}
+
+.watch-invite-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--on-surface);
+  margin: 0 0 12px;
+}
+
+.watch-invite-msg {
+  font-size: 13px;
+  color: var(--secondary);
+  margin: 0 0 12px;
+}
+
+.watch-invite-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.watch-invite-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--on-surface);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.watch-invite-user:hover {
+  background: rgba(123, 208, 255, 0.1);
+}
+
+.watch-invite-dismiss {
+  margin-top: 12px;
+  background: none;
+  border: none;
+  color: var(--on-surface-variant);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.watch-invite-dismiss:hover {
+  opacity: 1;
+}

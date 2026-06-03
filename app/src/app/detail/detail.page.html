@@ -54,6 +54,24 @@
             {{ libraryService.isInLibrary(getCurrentId()) ? 'In Library' : 'Add to Library' }}
           </button>
         </div>
+
+        @if (showWatchInvite) {
+          <div class="watch-invite-section">
+            <h3 class="watch-invite-title">Watch with someone?</h3>
+            @if (watchInviteMsg) {
+              <p class="watch-invite-msg">{{ watchInviteMsg }}</p>
+            }
+            <div class="watch-invite-list">
+              @for (link of linkedUsers; track link.id) {
+                <button class="watch-invite-user" (click)="sendWatchInvite(link)">
+                  <span class="material-symbols-outlined">person</span>
+                  <span>{{ getPartner(link) }}</span>
+                </button>
+              }
+            </div>
+            <button class="watch-invite-dismiss" (click)="dismissWatchInvite()">Not now</button>
+          </div>
+        }
       </div>
     </div>
   </ion-content>
