@@ -2,11 +2,19 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import tmdbRoutes from './routes/tmdb.js';
+import libraryRoutes from './routes/library.js';
 
 const app = express();
 const port = process.env.PORT || 3100;
 
-app.use(cors());
+app.use(cors({
+  origin: true,
+  credentials: true,
+}));
+app.options('*', cors({
+  origin: true,
+  credentials: true,
+}));
 app.use(express.json());
 
 app.get('/api/health', (_req, res) => {
@@ -14,6 +22,7 @@ app.get('/api/health', (_req, res) => {
 });
 
 app.use('/api', tmdbRoutes);
+app.use('/api/library', libraryRoutes);
 
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error(err);

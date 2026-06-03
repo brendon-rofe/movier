@@ -8,15 +8,16 @@ datasource db {
 }
 
 model LibraryItem {
-  id          Int     @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   tmdbId      Int
   title       String
-  overview    String  @db.Text
+  overview    String   @db.Text
   posterPath  String?
   backdropPath String?
   voteAverage Float
   releaseDate String?
-  mediaType   String  @default("movie") // "movie" | "tv"
+  mediaType   String   @default("movie") // "movie" | "tv"
+  genreIds    String?  // JSON array stored as string
 
   movieTrack MovieTrack?
   tvTrack    TvTrack?
