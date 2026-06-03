@@ -6,12 +6,13 @@ import { MovieService, MovieDetails, TvDetails, Movie, Genre } from '../services
 import { LibraryService } from '../services/library.service';
 import { SharedWatchService } from '../services/shared-watch.service';
 import { LinkService, UserLink } from '../services/link.service';
+import { WatchInviteModal } from '../components/watch-invite-modal/watch-invite-modal';
 
 @Component({
   selector: 'app-detail',
   templateUrl: 'detail.page.html',
   styleUrls: ['detail.page.scss'],
-  imports: [IonContent, FormsModule],
+  imports: [IonContent, FormsModule, WatchInviteModal],
 })
 export class DetailPage implements OnInit {
   movie: MovieDetails | null = null;
@@ -19,7 +20,7 @@ export class DetailPage implements OnInit {
   type: 'movie' | 'tv' = 'movie';
   showWatchInvite = false;
   linkedUsers: UserLink[] = [];
-  watchInviteMsg = '';
+  pendingMovie: Movie | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -112,12 +113,6 @@ export class DetailPage implements OnInit {
     return this.movieService.getImageUrl(path, size);
   }
 
-  getPartner(link: UserLink): string {
-    if (link.requester && link.requester.username) return link.requester.username;
-    if (link.receiver && link.receiver.username) return link.receiver.username;
-    return '';
-  }
-
   async toggleLibrary() {
     const id = this.type === 'movie' ? this.movie?.id : this.tvShow?.id;
     const title = this.getTitle();
@@ -130,7 +125,12 @@ export class DetailPage implements OnInit {
 
     if (!id) return;
 
-    const movie: Movie = {
+    if (this.libraryService.isInLibrary(id)) {
+      this.libraryService.removeMovie(id);
+      return;
+    }
+
+    this.pendingMovie = {
       id,
       title,
       overview,
@@ -142,30 +142,23 @@ export class DetailPage implements OnInit {
       media_type: this.type,
     };
 
-    if (this.libraryService.isInLibrary(movie.id)) {
-      this.libraryService.removeMovie(movie.id);
-      this.showWatchInvite = false;
+    if (this.linkedUsers.length > 0) {
+      this.showWatchInvite = true;
     } else {
-      await this.libraryService.addMovie(movie);
-      if (this.linkedUsers.length > 0) {
-        this.showWatchInvite = true;
-      }
+      await this.libraryService.addMovie(this.pendingMovie);
+      this.pendingMovie = null;
     }
   }
 
-  async sendWatchInvite(link: UserLink) {
-    const partner = link.requester && link.requester.username ? link.requester.username : link.receiver?.username || '';
-    try {
-      await this.sharedWatchService.invite(partner, this.getCurrentId(), this.type, this.getTitle());
-      this.watchInviteMsg = `Invite sent to ${partner}!`;
-    } catch (e: any) {
-      this.watchInviteMsg = e.error?.error || 'Failed to send invite';
+  onInviteSent() {
+    if (this.pendingMovie) {
+      this.libraryService.addMovie(this.pendingMovie);
+      this.pendingMovie = null;
     }
   }
 
-  dismissWatchInvite() {
-    this.showWatchInvite = false;
-    this.watchInviteMsg = '';
+  onInviteDismiss() {
+    this.pendingMovie = null;
   }
 
   goBack() {

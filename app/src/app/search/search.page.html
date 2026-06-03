@@ -21,6 +21,17 @@
 
 <app-notification-dropdown [isOpen]="notifOpen" (close)="closeNotifications()" />
 
+<app-watch-invite-modal
+  [isOpen]="showWatchInvite"
+  [linkedUsers]="linkedUsers"
+  [tmdbId]="lastAddedItem?.id ?? 0"
+  [mediaType]="lastAddedItem?.media_type ?? 'movie'"
+  [title]="lastAddedItem ? getDisplayTitle(lastAddedItem) : ''"
+  (close)="showWatchInvite = false; onInviteDismiss()"
+  (dismiss)="showWatchInvite = false; onInviteSent()"
+  (inviteSent)="onInviteSent()"
+/>
+
 <ion-content class="main-content">
   <!-- Search Input -->
   <section class="search-section">

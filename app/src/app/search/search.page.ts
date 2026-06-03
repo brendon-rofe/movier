@@ -6,13 +6,15 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, Subscription } 
 import { MovieService, SearchResultItem, Movie } from '../services/movie.service';
 import { LibraryService } from '../services/library.service';
 import { NotificationService } from '../services/notification.service';
+import { LinkService, UserLink } from '../services/link.service';
 import { NotificationDropdown } from '../components/notification-dropdown/notification-dropdown';
+import { WatchInviteModal } from '../components/watch-invite-modal/watch-invite-modal';
 
 @Component({
   selector: 'app-search',
   templateUrl: 'search.page.html',
   styleUrls: ['search.page.scss'],
-  imports: [IonContent, RouterLink, FormsModule, NotificationDropdown],
+  imports: [IonContent, RouterLink, FormsModule, NotificationDropdown, WatchInviteModal],
 })
 export class SearchPage implements OnInit, OnDestroy {
   query = '';
@@ -20,6 +22,10 @@ export class SearchPage implements OnInit, OnDestroy {
   loading = false;
   notifOpen = false;
   unreadCount = 0;
+  showWatchInvite = false;
+  linkedUsers: UserLink[] = [];
+  lastAddedItem: SearchResultItem | null = null;
+  pendingMovie: Movie | null = null;
 
   private searchSubject = new Subject<string>();
   private sub: Subscription | null = null;
@@ -30,9 +36,10 @@ export class SearchPage implements OnInit, OnDestroy {
     private router: Router,
     private notifService: NotificationService,
     public libraryService: LibraryService,
+    private linkService: LinkService,
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     this.notifSub = this.notifService.unreadCount$.subscribe((c) => this.unreadCount = c);
     this.sub = this.searchSubject.pipe(
       debounceTime(400),
@@ -49,6 +56,11 @@ export class SearchPage implements OnInit, OnDestroy {
     ).subscribe((items) => {
       this.results = items;
       this.loading = false;
+    });
+
+    await this.linkService.loadLinks();
+    this.linkService.links$.subscribe((links) => {
+      this.linkedUsers = [...links.sent, ...links.received].filter((l) => l.status === 'accepted');
     });
   }
 
@@ -92,10 +104,16 @@ export class SearchPage implements OnInit, OnDestroy {
     return date.substring(0, 4);
   }
 
-  toggleLibrary(item: SearchResultItem, event: Event) {
+  async toggleLibrary(item: SearchResultItem, event: Event) {
     event.stopPropagation();
-    const movie: Movie = {
-      id: item.id,
+    const id = item.id;
+    if (this.libraryService.isInLibrary(id)) {
+      this.libraryService.removeMovie(id);
+      return;
+    }
+
+    this.pendingMovie = {
+      id,
       title: item.title || item.name || '',
       overview: item.overview || '',
       poster_path: item.poster_path,
@@ -105,10 +123,26 @@ export class SearchPage implements OnInit, OnDestroy {
       genre_ids: item.genre_ids || [],
       media_type: item.media_type,
     };
-    if (this.libraryService.isInLibrary(movie.id)) {
-      this.libraryService.removeMovie(movie.id);
+
+    if (this.linkedUsers.length > 0) {
+      this.lastAddedItem = item;
+      this.showWatchInvite = true;
     } else {
-      this.libraryService.addMovie(movie);
+      await this.libraryService.addMovie(this.pendingMovie);
+      this.pendingMovie = null;
     }
+  }
+
+  onInviteSent() {
+    if (this.pendingMovie) {
+      this.libraryService.addMovie(this.pendingMovie);
+      this.pendingMovie = null;
+    }
+    this.lastAddedItem = null;
+  }
+
+  onInviteDismiss() {
+    this.pendingMovie = null;
+    this.lastAddedItem = null;
   }
 }
