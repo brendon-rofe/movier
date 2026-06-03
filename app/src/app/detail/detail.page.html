@@ -1,6 +1,6 @@
-@if (movie) {
+@if (movie || tvShow) {
   <div class="backdrop-wrap">
-    <img [src]="getImageUrl(movie.backdrop_path, 'w1280')" alt="" class="backdrop" />
+    <img [src]="getImageUrl(getBackdropPath(), 'w1280')" alt="" class="backdrop" />
     <div class="backdrop-gradient"></div>
   </div>
 
@@ -11,47 +11,47 @@
   <ion-content class="detail-content">
     <div class="detail-body">
       <div class="poster-col">
-        <img [src]="getImageUrl(movie.poster_path)" [alt]="movie.title" class="poster" />
+        <img [src]="getImageUrl(getPosterPath())" [alt]="getTitle()" class="poster" />
       </div>
 
       <div class="info-col">
-        <h1 class="title">{{ movie.title }}</h1>
+        <h1 class="title">{{ getTitle() }}</h1>
 
-        @if (movie.tagline) {
-          <p class="tagline">{{ movie.tagline }}</p>
+        @if (getTagline()) {
+          <p class="tagline">{{ getTagline() }}</p>
         }
 
         <div class="meta-row">
           <span class="rating">
             <span class="material-symbols-outlined star-icon">star</span>
-            {{ movie.vote_average.toFixed(1) }}
+            {{ getRating().toFixed(1) }}
           </span>
           <span class="meta-dot">&middot;</span>
-          <span>{{ movie.release_date | date:'yyyy' }}</span>
-          @if (movie.runtime) {
+          <span>{{ getReleaseYear() }}</span>
+          @if (getRuntime()) {
             <span class="meta-dot">&middot;</span>
-            <span>{{ movie.runtime }} min</span>
+            <span>{{ getRuntime() }}</span>
           }
         </div>
 
         <div class="genre-row">
-          @for (genre of movie.genres; track genre.id) {
+          @for (genre of getGenres(); track genre.id) {
             <span class="genre-tag">{{ genre.name }}</span>
           }
         </div>
 
-        <p class="overview">{{ movie.overview }}</p>
+        <p class="overview">{{ getOverview() }}</p>
 
         <div class="action-row">
           <button
             class="lib-btn"
-            [class.in-lib]="libraryService.isInLibrary(movie.id)"
+            [class.in-lib]="libraryService.isInLibrary(getCurrentId())"
             (click)="toggleLibrary()"
           >
             <span class="material-symbols-outlined lib-btn-icon">
-              {{ libraryService.isInLibrary(movie.id) ? 'check' : 'add' }}
+              {{ libraryService.isInLibrary(getCurrentId()) ? 'check' : 'add' }}
             </span>
-            {{ libraryService.isInLibrary(movie.id) ? 'In Library' : 'Add to Library' }}
+            {{ libraryService.isInLibrary(getCurrentId()) ? 'In Library' : 'Add to Library' }}
           </button>
         </div>
       </div>

@@ -722,8 +722,8 @@ ion-content.main-content {
   color: var(--secondary);
 }
 
-/* ===== Movie Grid ===== */
-.movie-grid {
+/* ===== Card Grid ===== */
+.card-grid {
   display: grid;
   grid-template-columns: repeat(1, 1fr);
   gap: 16px;
@@ -731,15 +731,13 @@ ion-content.main-content {
 }
 
 @media (min-width: 640px) {
-  .movie-grid {
+  .card-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-@media (min-width: 1024px) {
-  .movie-grid {
-    grid-template-columns: repeat(6, 1fr);
-  }
+.section-last {
+  padding-bottom: 48px;
 }
 
 .movie-card {
