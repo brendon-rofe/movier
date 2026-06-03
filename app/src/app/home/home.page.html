@@ -15,83 +15,108 @@
 </header>
 
 <ion-content class="main-content">
-  <section class="section">
-    <div class="section-header">
-      <h3 class="section-title">Popular Movies</h3>
-    </div>
+  <div class="toggle-row">
+    <button
+      class="toggle-btn"
+      [class.active]="view === 'series'"
+      (click)="view = 'series'"
+    >Series</button>
+    <button
+      class="toggle-btn"
+      [class.active]="view === 'movies'"
+      (click)="view = 'movies'"
+    >Movies</button>
+  </div>
 
-    <div class="card-grid">
-      @for (movie of popularMovies; track movie.id) {
-        <div class="movie-card">
-          <div class="movie-poster" (click)="openDetail('movie', movie.id)" style="cursor: pointer;">
-            <img [src]="getImageUrl(movie.poster_path)" [alt]="movie.title" />
-            <div class="movie-rating">
-              <span class="material-symbols-outlined rating-icon">star</span>
-              <span>{{ movie.vote_average.toFixed(1) }}</span>
+  @if (view === 'series') {
+    <section class="section section-last">
+      <div class="section-header">
+        <h3 class="section-title">Currently Watching Series</h3>
+      </div>
+
+      @if (watchingSeries.length === 0) {
+        <div class="empty-state">
+          <p class="empty-text">No series being watched yet. Add some from search!</p>
+          <button class="empty-btn" routerLink="/search">
+            <span class="material-symbols-outlined">search</span>
+            Browse Series
+          </button>
+        </div>
+      } @else {
+        <div class="card-grid">
+          @for (show of watchingSeries; track show.id) {
+            <div class="movie-card">
+              <div class="movie-poster" (click)="openDetail('tv', show.id)" style="cursor: pointer;">
+                <img [src]="getImageUrl(show.poster_path)" [alt]="show.title" />
+                <div class="movie-rating">
+                  <span class="material-symbols-outlined rating-icon">star</span>
+                  <span>{{ show.vote_average.toFixed(1) }}</span>
+                </div>
+              </div>
+              <div class="movie-info">
+                <h4 class="movie-title">{{ show.title }}</h4>
+                <p class="movie-year">{{ show.release_date.substring(0, 4) }}</p>
+                <div class="card-buttons">
+                  <button class="card-lib-btn in-library" (click)="removeFromLibrary(show.id)">
+                    <span class="material-symbols-outlined card-btn-icon">check</span>
+                    In Library
+                  </button>
+                  <button class="detail-btn" (click)="openDetail('tv', show.id)">
+                    <span class="material-symbols-outlined card-btn-icon">info</span>
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="movie-info">
-            <h4 class="movie-title">{{ movie.title }}</h4>
-            <p class="movie-year">{{ movie.release_date.substring(0, 4) }}</p>
-            <div class="card-buttons">
-              <button
-                class="card-lib-btn"
-                [class.in-library]="libraryService.isInLibrary(movie.id)"
-                (click)="toggleLibrary(movie)"
-              >
-                <span class="material-symbols-outlined card-btn-icon">
-                  {{ libraryService.isInLibrary(movie.id) ? 'check' : 'add' }}
-                </span>
-                {{ libraryService.isInLibrary(movie.id) ? 'In Library' : 'Add to Library' }}
-              </button>
-              <button class="detail-btn" (click)="openDetail('movie', movie.id)">
-                <span class="material-symbols-outlined card-btn-icon">info</span>
-              </button>
-            </div>
-          </div>
+          }
         </div>
       }
-    </div>
-  </section>
+    </section>
+  }
 
-  <section class="section section-last">
-    <div class="section-header">
-      <h3 class="section-title">Popular Series</h3>
-    </div>
+  @if (view === 'movies') {
+    <section class="section section-last">
+      <div class="section-header">
+        <h3 class="section-title">Currently Watching Movies</h3>
+      </div>
 
-    <div class="card-grid">
-      @for (show of popularTvShows; track show.id) {
-        <div class="movie-card">
-          <div class="movie-poster" (click)="openDetail('tv', show.id)" style="cursor: pointer;">
-            <img [src]="getImageUrl(show.poster_path)" [alt]="show.name" />
-            <div class="movie-rating">
-              <span class="material-symbols-outlined rating-icon">star</span>
-              <span>{{ show.vote_average.toFixed(1) }}</span>
+      @if (watchingMovies.length === 0) {
+        <div class="empty-state">
+          <p class="empty-text">No movies being watched yet. Add some from search!</p>
+          <button class="empty-btn" routerLink="/search">
+            <span class="material-symbols-outlined">search</span>
+            Browse Movies
+          </button>
+        </div>
+      } @else {
+        <div class="card-grid">
+          @for (movie of watchingMovies; track movie.id) {
+            <div class="movie-card">
+              <div class="movie-poster" (click)="openDetail('movie', movie.id)" style="cursor: pointer;">
+                <img [src]="getImageUrl(movie.poster_path)" [alt]="movie.title" />
+                <div class="movie-rating">
+                  <span class="material-symbols-outlined rating-icon">star</span>
+                  <span>{{ movie.vote_average.toFixed(1) }}</span>
+                </div>
+              </div>
+              <div class="movie-info">
+                <h4 class="movie-title">{{ movie.title }}</h4>
+                <p class="movie-year">{{ movie.release_date.substring(0, 4) }}</p>
+                <div class="card-buttons">
+                  <button class="card-lib-btn in-library" (click)="toggleLibrary(movie)">
+                    <span class="material-symbols-outlined card-btn-icon">check</span>
+                    In Library
+                  </button>
+                  <button class="detail-btn" (click)="openDetail('movie', movie.id)">
+                    <span class="material-symbols-outlined card-btn-icon">info</span>
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="movie-info">
-            <h4 class="movie-title">{{ show.name }}</h4>
-            <p class="movie-year">{{ show.first_air_date.substring(0, 4) }}</p>
-            <div class="card-buttons">
-              <button
-                class="card-lib-btn"
-                [class.in-library]="libraryService.isInLibrary(show.id)"
-                (click)="addTvToLibrary(show)"
-              >
-                <span class="material-symbols-outlined card-btn-icon">
-                  {{ libraryService.isInLibrary(show.id) ? 'check' : 'add' }}
-                </span>
-                {{ libraryService.isInLibrary(show.id) ? 'In Library' : 'Add to Library' }}
-              </button>
-              <button class="detail-btn" (click)="openDetail('tv', show.id)">
-                <span class="material-symbols-outlined card-btn-icon">info</span>
-              </button>
-            </div>
-          </div>
+          }
         </div>
       }
-    </div>
-  </section>
+    </section>
+  }
 </ion-content>
 
 <!-- Bottom Navigation -->

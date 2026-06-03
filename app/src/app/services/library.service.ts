@@ -4,7 +4,7 @@ import { Movie } from './movie.service';
 
 @Injectable({ providedIn: 'root' })
 export class LibraryService {
-  private library = new BehaviorSubject<Movie[]>([]);
+  library = new BehaviorSubject<Movie[]>([]);
   library$: Observable<Movie[]> = this.library.asObservable();
 
   addMovie(movie: Movie) {
