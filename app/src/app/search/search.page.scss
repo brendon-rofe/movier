@@ -361,6 +361,45 @@ ion-content.main-content {
   color: var(--primary);
 }
 
+.lib-card-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 8px;
+  width: 100%;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--on-surface);
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lib-card-btn:hover {
+  background: var(--primary);
+  color: var(--on-primary);
+  border-color: var(--primary);
+}
+
+.lib-card-btn.in-lib {
+  background: rgba(123, 208, 255, 0.15);
+  border-color: var(--secondary);
+  color: var(--secondary);
+}
+
+.lib-card-btn.in-lib:hover {
+  background: rgba(123, 208, 255, 0.25);
+}
+
+.lib-card-btn span {
+  font-size: 16px;
+}
+
 .star-icon {
   font-size: 14px;
   color: #f5c518;

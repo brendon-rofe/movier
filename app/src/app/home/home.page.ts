@@ -59,7 +59,7 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   openDetail(type: string, id: number) {
-    this.router.navigate(['/detail', type, id]);
+    this.router.navigate(['/track', type, id]);
   }
 
   toggleLibrary(movie: Movie) {

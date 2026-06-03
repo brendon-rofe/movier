@@ -74,6 +74,16 @@
                   {{ item.vote_average.toFixed(1) }}
                 </span>
               </div>
+              <button
+                class="lib-card-btn"
+                [class.in-lib]="libraryService.isInLibrary(item.id)"
+                (click)="toggleLibrary(item, $event)"
+              >
+                <span class="material-symbols-outlined">
+                  {{ libraryService.isInLibrary(item.id) ? 'check' : 'add' }}
+                </span>
+                {{ libraryService.isInLibrary(item.id) ? 'In Library' : 'Add' }}
+              </button>
             </div>
           </div>
         }

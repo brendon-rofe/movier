@@ -3,7 +3,8 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, Subscription } from 'rxjs';
-import { MovieService, SearchResultItem } from '../services/movie.service';
+import { MovieService, SearchResultItem, Movie } from '../services/movie.service';
+import { LibraryService } from '../services/library.service';
 import { NotificationService } from '../services/notification.service';
 import { NotificationDropdown } from '../components/notification-dropdown/notification-dropdown';
 
@@ -28,6 +29,7 @@ export class SearchPage implements OnInit, OnDestroy {
     private movieService: MovieService,
     private router: Router,
     private notifService: NotificationService,
+    public libraryService: LibraryService,
   ) {}
 
   ngOnInit() {
@@ -88,5 +90,25 @@ export class SearchPage implements OnInit, OnDestroy {
   getDisplayYear(item: SearchResultItem): string {
     const date = item.release_date || item.first_air_date || '';
     return date.substring(0, 4);
+  }
+
+  toggleLibrary(item: SearchResultItem, event: Event) {
+    event.stopPropagation();
+    const movie: Movie = {
+      id: item.id,
+      title: item.title || item.name || '',
+      overview: item.overview || '',
+      poster_path: item.poster_path,
+      backdrop_path: item.backdrop_path,
+      vote_average: item.vote_average,
+      release_date: item.release_date || item.first_air_date || '',
+      genre_ids: item.genre_ids || [],
+      media_type: item.media_type,
+    };
+    if (this.libraryService.isInLibrary(movie.id)) {
+      this.libraryService.removeMovie(movie.id);
+    } else {
+      this.libraryService.addMovie(movie);
+    }
   }
 }
