@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'http://localhost:3100/api',
+  // Replace with your Render API Web Service URL after deployment
+  apiBaseUrl: 'https://movier-api.onrender.com/api',
   tmdbImageBaseUrl: 'https://image.tmdb.org/t/p',
 };
