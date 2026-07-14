@@ -53,6 +53,7 @@
           <input type="checkbox" [(ngModel)]="rememberMe" />
           <span class="checkbox-text">Remember me</span>
         </label>
+        <a routerLink="/forgot-password" class="forgot-link">Forgot password?</a>
       </div>
 
       <button class="auth-btn" (click)="login()" [disabled]="loading">

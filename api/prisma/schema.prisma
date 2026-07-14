@@ -7,11 +7,13 @@ datasource db {
 }
 
 model User {
-  id           Int           @id @default(autoincrement())
-  username     String        @unique
-  passwordHash String
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  id               Int           @id @default(autoincrement())
+  username         String        @unique
+  passwordHash     String
+  securityQuestion String?
+  securityAnswer   String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
   libraryItems LibraryItem[]
   sentLinks        UserLink[] @relation("SentLinks")
   receivedLinks    UserLink[] @relation("ReceivedLinks")

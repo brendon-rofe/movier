@@ -51,6 +51,20 @@ export class AuthService {
     return data.user;
   }
 
+  async getSecurityQuestion(username: string): Promise<string> {
+    const data = await firstValueFrom(this.http.post<{ securityQuestion: string }>(`${this.api}/auth/get-security-question`, { username }));
+    return data.securityQuestion;
+  }
+
+  async forgotPassword(username: string, securityAnswer: string): Promise<string> {
+    const data = await firstValueFrom(this.http.post<{ resetToken: string }>(`${this.api}/auth/forgot-password`, { username, securityAnswer }));
+    return data.resetToken;
+  }
+
+  async resetPassword(resetToken: string, newPassword: string): Promise<void> {
+    await firstValueFrom(this.http.post<{ message: string }>(`${this.api}/auth/reset-password`, { resetToken, newPassword }));
+  }
+
   logout() {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.userKey);

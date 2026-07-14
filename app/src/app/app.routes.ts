@@ -11,6 +11,10 @@ export const routes: Routes = [
     loadComponent: () => import('./register/register.page').then((m) => m.RegisterPage),
   },
   {
+    path: 'forgot-password',
+    loadComponent: () => import('./forgot-password/forgot-password.page').then((m) => m.ForgotPasswordPage),
+  },
+  {
     path: 'home',
     loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
     canActivate: [authGuard],
