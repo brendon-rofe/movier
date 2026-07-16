@@ -342,6 +342,41 @@ ion-content.main-content {
   padding: 16px 0 32px;
 }
 
+/* ===== Security Question ===== */
+.security-existing {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.security-existing-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.security-existing-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--on-surface-variant);
+}
+
 /* ===== Invite / Link Styles ===== */
 .invite-card {
   background: rgba(23, 31, 51, 0.6);

@@ -33,6 +33,13 @@ export class SettingsPage implements OnInit, OnDestroy {
   user = this.auth.getUser();
   notifOpen = false;
   unreadCount = 0;
+  securityQuestion = '';
+  securityAnswer = '';
+  existingQuestion = '';
+  showSecurityForm = false;
+  securityLoading = false;
+  securityError = '';
+  securitySuccess = '';
   inviteUsername = '';
   showInviteForm = false;
   inviteError = '';
@@ -112,6 +119,7 @@ export class SettingsPage implements OnInit, OnDestroy {
     this.watchSub = this.sharedWatchService.watches$.subscribe((w) => {
       this.sharedWatches = [...w.owned, ...w.partnered].filter((sw) => sw.status === 'accepted');
     });
+    this.checkSecurityQuestion();
   }
 
   ngOnDestroy() {
@@ -126,6 +134,38 @@ export class SettingsPage implements OnInit, OnDestroy {
 
   closeNotifications() {
     this.notifOpen = false;
+  }
+
+  async checkSecurityQuestion() {
+    if (!this.user) return;
+    try {
+      const question = await this.auth.getSecurityQuestion(this.user.username);
+      this.existingQuestion = question;
+    } catch {
+      this.existingQuestion = '';
+    }
+  }
+
+  async saveSecurityQuestion() {
+    if (!this.securityQuestion.trim() || !this.securityAnswer.trim()) {
+      this.securityError = 'Please fill in both fields';
+      return;
+    }
+    this.securityLoading = true;
+    this.securityError = '';
+    this.securitySuccess = '';
+    try {
+      await this.auth.setSecurityQuestion(this.securityQuestion.trim(), this.securityAnswer.trim());
+      this.existingQuestion = this.securityQuestion.trim();
+      this.securityQuestion = '';
+      this.securityAnswer = '';
+      this.showSecurityForm = false;
+      this.securitySuccess = 'Security question saved';
+    } catch (e: any) {
+      this.securityError = e.error?.error || 'Failed to save security question';
+    } finally {
+      this.securityLoading = false;
+    }
   }
 
   async sendInvite() {

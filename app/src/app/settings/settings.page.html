@@ -33,6 +33,69 @@
       </div>
     }
 
+    <!-- Security Question -->
+    <div class="setting-group">
+      <h3 class="group-title">Security Question</h3>
+      <div class="invite-card">
+        @if (securitySuccess) {
+          <div class="invite-success">{{ securitySuccess }}</div>
+        }
+        @if (!showSecurityForm) {
+          @if (existingQuestion) {
+            <div class="security-existing">
+              <div class="security-existing-row">
+                <span class="material-symbols-outlined" style="color: var(--secondary);">help</span>
+                <div class="security-existing-text">
+                  <span class="setting-label">{{ existingQuestion }}</span>
+                  <span class="setting-desc">Used for password recovery</span>
+                </div>
+              </div>
+              <button class="invite-trigger" (click)="showSecurityForm = true">Change</button>
+            </div>
+          } @else {
+            <button class="invite-trigger" (click)="showSecurityForm = true">
+              <span class="material-symbols-outlined">add_circle</span>
+              Set Security Question
+            </button>
+          }
+        } @else {
+          <div class="invite-form">
+            @if (securityError) {
+              <div class="invite-error">{{ securityError }}</div>
+            }
+            <div class="input-group">
+              <label class="input-label">Question</label>
+              <input
+                class="invite-input"
+                type="text"
+                placeholder="e.g. What is your pet's name?"
+                [(ngModel)]="securityQuestion"
+                (keydown.enter)="saveSecurityQuestion()"
+              />
+            </div>
+            <div class="input-group">
+              <label class="input-label">Answer</label>
+              <input
+                class="invite-input"
+                type="text"
+                placeholder="Enter your answer"
+                [(ngModel)]="securityAnswer"
+                (keydown.enter)="saveSecurityQuestion()"
+              />
+            </div>
+            <div class="invite-input-row">
+              <button class="invite-send-btn" (click)="saveSecurityQuestion()" [disabled]="securityLoading">
+                {{ securityLoading ? 'Saving...' : 'Save' }}
+              </button>
+              <button class="invite-cancel-btn" (click)="showSecurityForm = false; securityError = ''; securitySuccess = ''; securityQuestion = ''; securityAnswer = ''">
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
     <!-- Linked Users -->
     @if (acceptedLinks.length > 0) {
       <div class="setting-group">

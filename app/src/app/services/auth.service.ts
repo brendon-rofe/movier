@@ -65,6 +65,10 @@ export class AuthService {
     await firstValueFrom(this.http.post<{ message: string }>(`${this.api}/auth/reset-password`, { resetToken, newPassword }));
   }
 
+  async setSecurityQuestion(securityQuestion: string, securityAnswer: string): Promise<void> {
+    await firstValueFrom(this.http.put<{ message: string }>(`${this.api}/auth/security-question`, { securityQuestion, securityAnswer }));
+  }
+
   logout() {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.userKey);
